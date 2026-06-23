@@ -188,62 +188,224 @@
   .whatif-panel { display: flex; flex-direction: column; gap: var(--space-3); }
   .whatif-panel__shift { margin-bottom: var(--space-1); }
 
-  /* ── Logic editor, as docked content ─────────────────────────────────── */
-  .logic-panel { display: flex; flex-direction: column; gap: var(--space-3); }
+  /* ── Logic editor, as docked content — "one line, one truth" ──────────────
+     At rest: a breadcrumb, the formula, and one status line. Production, diff,
+     fields, and the function library tuck behind three quiet disclosures. The
+     same markup reflows by container width (sidebar column → footer + rail). */
+  .logic-panel { container-type: inline-size; min-width: 0; }
   .logic-panel--empty { font-size: var(--fs-12); color: var(--color-ink-subtle); }
+  /* The layout lives on an inner wrapper: a container can't restyle itself, so
+     the @container reflow targets this descendant, not .logic-panel. */
+  .lp-layout { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
 
-  .logic-panel__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); }
-  .logic-panel__head-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-  .logic-panel__head-copy strong { font-size: var(--fs-13); font-weight: var(--fw-semibold); color: var(--color-ink); }
-  .logic-panel__head-copy span { font-size: var(--fs-11); color: var(--color-ink-muted); }
-  .logic-panel__head-status { display: inline-flex; align-items: center; gap: var(--space-1); flex: none; }
+  /* The editing surface — the hero. */
+  .lp-edit { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
 
-  .logic-panel__selectors { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-2); }
-  .logic-panel__field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .logic-panel__field > span { font-size: 10px; font-weight: var(--fw-semibold); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ink-subtle); }
-  .logic-panel__field select {
-    width: 100%;
-    height: 30px;
-    padding: 0 8px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-control);
-    background: var(--color-surface);
-    font-size: var(--fs-12);
-    color: var(--color-ink);
+  .lp-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+
+  /* Breadcrumb: visual is the muted category, metric is the serif hero/title.
+     Stacks in the sidebar; goes inline in the wide footer (see @container). */
+  .lp-crumb { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .lp-crumb__sep { display: none; color: var(--color-ink-subtle); font-size: var(--fs-13); }
+
+  /* native <select> restyled as inline text — keeps keyboard/a11y for free. */
+  .lp-select { position: relative; display: inline-flex; align-items: center; gap: 6px; min-width: 0; max-width: 100%; }
+  .lp-select select {
+    appearance: none;
+    -webkit-appearance: none;
+    max-width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0 17px 0 0;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    text-overflow: ellipsis;
   }
+  .lp-select select:focus-visible { outline: 2px solid var(--focus-ring-color); outline-offset: 3px; border-color: transparent; box-shadow: none; }
+  .lp-select::after {
+    content: '';
+    position: absolute;
+    right: 3px;
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    opacity: 0.45;
+    pointer-events: none;
+  }
+  .lp-select--visual { color: var(--color-ink-subtle); }
+  .lp-select--visual select { font-size: var(--fs-11); font-weight: var(--fw-semibold); letter-spacing: 0.06em; text-transform: uppercase; }
+  .lp-select--metric { color: var(--color-ink); }
+  .lp-select--metric select { font-family: var(--font-brand); font-size: 20px; line-height: 1.15; letter-spacing: 0.01em; }
 
-  .logic-panel__block { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-  .logic-panel__block-label { font-size: 10px; font-weight: var(--fw-semibold); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ink-subtle); }
-  .logic-panel__production {
-    display: block;
-    padding: 8px 10px;
-    border: 1px solid var(--color-border-faint);
+  .lp-head__status { display: inline-flex; align-items: center; gap: 6px; flex: none; padding-top: 3px; }
+  .lp-status-dot { width: 7px; height: 7px; border-radius: var(--radius-chip); background: var(--color-sage); flex: none; }
+  .lp-status-dot[data-tone='accent'] { background: var(--color-accent); }
+  .lp-status-label { font-size: var(--fs-11); color: var(--color-ink-subtle); }
+  .lp-resetall { font-size: var(--fs-11); color: var(--color-ink-muted); padding: 2px 5px; border-radius: 5px; transition: color var(--motion-fast), background var(--motion-fast); }
+  .lp-resetall:hover { color: var(--color-accent-strong); background: var(--color-accent-soft); }
+
+  /* Status dot — reused under the editor and on the segments. */
+  .lp-dot { display: inline-block; width: 7px; height: 7px; border-radius: var(--radius-chip); flex: none; background: var(--color-ink-subtle); }
+  .lp-dot--accent { background: var(--color-accent); }
+  .lp-dot--warn { background: var(--color-amber); }
+  .lp-dot[data-tone='bad'] { background: var(--color-danger); }
+  .lp-dot[data-tone='warn'] { background: var(--color-amber); }
+  .lp-dot[data-tone='good'] { background: var(--color-sage); }
+
+  /* The editor. Validity reads as a soft border/ring, never a worded pill. */
+  .lp-editor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: 1px solid var(--color-surface-soft);
     border-radius: var(--radius-control);
     background: var(--color-surface-sunken);
+    transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+  }
+  .lp-editor:focus-within { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--color-accent-soft); }
+  .lp-editor[data-validity='invalid'] { border-color: var(--status-bad-border); }
+  .lp-editor[data-validity='invalid']:focus-within { border-color: var(--color-danger); box-shadow: 0 0 0 3px var(--color-danger-soft); }
+
+  .lp-editor__field {
+    width: 100%;
+    min-height: 84px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    resize: vertical;
+    font-family: var(--font-mono);
+    font-size: var(--fs-14);
+    line-height: 1.7;
+    color: var(--color-ink);
+  }
+  .lp-editor__field:focus { outline: none; box-shadow: none; }
+  .lp-editor__field::placeholder { color: var(--color-ink-subtle); }
+
+  /* Apply is contextual — a fixed-height slot keeps it from shifting the layout. */
+  .lp-apply { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-2); min-height: 32px; }
+  .lp-apply__btn { min-height: 32px; padding: 6px 14px; font-size: var(--fs-12); background: var(--color-accent); border-color: var(--color-accent); }
+  .lp-apply__btn:hover:not(:disabled) { background: var(--color-accent-strong); border-color: var(--color-accent-strong); }
+  .lp-kbd { font-family: var(--font-mono); font-size: var(--fs-11); padding: 1px 4px; border: none; border-radius: 4px; background: rgba(255, 255, 255, 0.2); color: inherit; }
+
+  .lp-statusline { display: flex; align-items: center; gap: 6px; min-height: 16px; font-size: var(--fs-11); color: var(--color-ink-muted); }
+  .lp-statusline[data-tone='bad'] { color: var(--color-danger-ink); }
+  .lp-statusline[data-tone='warn'] { color: var(--color-amber-ink); }
+  .lp-statusline[data-tone='good'] { color: var(--color-sage-ink); }
+  .lp-statusline[data-tone='muted'] { color: var(--color-ink-subtle); }
+
+  /* The three on-demand disclosures — a segmented control + one content panel. */
+  .lp-refs { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+  .lp-segments {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    align-self: flex-start;
+    max-width: 100%;
+    padding: 3px;
+    border-radius: var(--radius-control);
+    background: var(--color-surface-sunken);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .lp-segments::-webkit-scrollbar { display: none; }
+  .lp-seg {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: none;
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 6px;
+    font-size: var(--fs-12);
+    font-weight: var(--fw-medium);
+    color: var(--color-ink-muted);
+    white-space: nowrap;
+    transition: color var(--motion-fast), background var(--motion-fast);
+  }
+  .lp-seg:hover { color: var(--color-ink); }
+  .lp-seg[data-active='true'] { background: var(--color-surface-raised); color: var(--color-ink); font-weight: var(--fw-semibold); box-shadow: var(--shadow-control); }
+
+  .lp-panel { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+  .lp-note { font-size: var(--fs-12); color: var(--color-ink-subtle); }
+  .lp-impact { font-size: var(--fs-13); line-height: var(--lh-base); color: var(--color-ink-body); }
+  .lp-prod,
+  .lp-tokens code {
+    display: block;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: var(--color-surface-soft);
     font-family: var(--font-mono);
     font-size: var(--fs-11);
-    line-height: 1.5;
+    line-height: 1.6;
     color: var(--color-ink-body);
     white-space: pre-wrap;
     word-break: break-word;
   }
+  .lp-tokens { display: flex; flex-direction: column; gap: 3px; }
+  .lp-tokens__label { font-size: 10px; font-weight: var(--fw-semibold); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ink-subtle); }
+  .lp-warnlist { display: flex; flex-direction: column; gap: 3px; margin: 0; padding-left: 16px; font-size: var(--fs-11); color: var(--color-amber-ink); }
 
-  .logic-panel__editor-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
-  .logic-panel__editor {
+  /* The function inserter (replaces the old always-on guide). */
+  .fn-palette { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+  .fn-palette__search {
     width: 100%;
-    padding: 8px 10px;
+    height: 30px;
+    padding: 0 10px;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-control);
     background: var(--color-surface);
-    font-family: var(--font-mono);
     font-size: var(--fs-12);
-    line-height: 1.5;
     color: var(--color-ink);
-    resize: vertical;
   }
-  .logic-panel__editor:focus-visible { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 2px var(--color-accent-soft); }
+  .fn-palette__list { display: flex; flex-direction: column; gap: var(--space-2); max-height: 244px; overflow-y: auto; scrollbar-width: thin; padding-right: 2px; }
+  .fn-palette__group { display: flex; flex-direction: column; gap: 1px; }
+  .fn-palette__cat { padding: 2px 2px 3px; font-size: 10px; font-weight: var(--fw-semibold); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ink-subtle); }
+  .fn-palette__row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 6px;
+    text-align: left;
+    transition: background var(--motion-fast);
+  }
+  .fn-palette__row:hover,
+  .fn-palette__row.is-active { background: var(--color-surface-soft); }
+  .fn-palette__row code { flex: none; font-family: var(--font-mono); font-size: var(--fs-12); color: var(--color-ink); }
+  .fn-palette__row span { flex: 1; min-width: 0; overflow: hidden; font-size: var(--fs-11); color: var(--color-ink-muted); text-overflow: ellipsis; white-space: nowrap; }
+  .fn-palette__empty { padding: 4px 2px; font-size: var(--fs-11); color: var(--color-ink-subtle); }
+  .fn-palette__help {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border-faint);
+    font-size: var(--fs-11);
+    color: var(--color-ink-subtle);
+  }
+  .fn-palette__help code { font-family: var(--font-mono); color: var(--color-ink-muted); }
 
-  .logic-panel__actions { display: flex; align-items: center; gap: var(--space-2); margin-top: 2px; }
+  /* Wide footer dock: editor on the left, a persistent segmented rail on the
+     right — so diff/fields/functions live beside the formula, not below it.
+     (No grid-template transition — honors the workbench layout note.) */
+  @container (min-width: 560px) {
+    .lp-layout { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr); gap: var(--space-4); align-items: start; }
+    .lp-crumb { flex-direction: row; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+    .lp-crumb__sep { display: inline; }
+    .lp-editor__field { min-height: 132px; }
+    .lp-refs { padding-left: var(--space-4); border-left: 1px solid var(--color-border-faint); }
+    .lp-segments { width: 100%; }
+    .fn-palette__list { max-height: 200px; }
+  }
 
   /* The stage header sticks to the top of the stage scroller (not the old
      page-scroll offset under the top bar). Outranks shell.css by specificity. */

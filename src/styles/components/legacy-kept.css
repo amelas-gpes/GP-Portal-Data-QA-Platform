@@ -451,23 +451,6 @@
   .formula-assist-bar { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); font-size: var(--fs-11); color: var(--color-ink-subtle); }
   .formula-assist-hint { display: inline-flex; align-items: center; gap: 4px; font-weight: var(--fw-medium); }
 
-  .formula-parse-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    height: 20px;
-    padding: 0 8px;
-    border-radius: var(--radius-chip);
-    border: 1px solid var(--status-neutral-border);
-    background: var(--status-neutral-bg);
-    color: var(--status-neutral-text);
-    font-weight: var(--fw-semibold);
-    white-space: nowrap;
-  }
-  .formula-parse-pill.valid { border-color: var(--status-good-border); background: var(--status-good-bg); color: var(--status-good-text); }
-  .formula-parse-pill.warning { border-color: var(--status-warn-border); background: var(--status-warn-bg); color: var(--status-warn-text); }
-  .formula-parse-pill.invalid { border-color: var(--status-bad-border); background: var(--status-bad-bg); color: var(--status-bad-text); }
-
   .field-status-legend { display: inline-flex; align-items: center; gap: 8px; }
   .status-key { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 
@@ -475,10 +458,6 @@
   .formula-active-function code { font-size: var(--fs-11); color: var(--color-accent-strong); white-space: nowrap; }
   .formula-active-function > span { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-ink-subtle); }
   .formula-assist-actions { display: inline-flex; gap: 2px; margin-left: auto; }
-
-  .formula-inline-messages { display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: var(--radius-control); font-size: var(--fs-12); }
-  .formula-inline-messages.error { background: var(--color-danger-soft); color: var(--color-danger-ink); }
-  .formula-inline-messages.warning { background: var(--color-amber-soft); color: var(--color-amber-ink); }
 
   /* Validation note box + draft status chip (LogicEditor / VisualWorkbench). */
   .validation-box {
@@ -517,58 +496,10 @@
   .draft-status-chip.needs-work { border-color: var(--status-warn-border); background: var(--status-warn-bg); color: var(--status-warn-text); }
   .draft-status-chip.invalid { border-color: var(--status-bad-border); background: var(--status-bad-bg); color: var(--status-bad-text); }
 
-  /* ════ Formula diff ══════════════════════════════════════════════════ */
-  .formula-diff {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    padding: var(--space-3);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border-faint);
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-surface);
-  }
-  .formula-diff-embedded { padding: 0; border: none; border-radius: 0; box-shadow: none; background: transparent; }
-
-  .formula-diff-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); }
-  .formula-diff-header h3 { font-size: var(--fs-13); font-weight: var(--fw-semibold); color: var(--color-ink); }
-  .formula-diff-impact { font-size: var(--fs-12); color: var(--color-ink-muted); }
-
-  .formula-diff-token-grid { display: grid; gap: var(--space-2); }
-  .formula-diff-token-line { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-  .formula-diff-token-line label { font-size: 10px; font-weight: var(--fw-semibold); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ink-subtle); }
-  .formula-diff-token-line code {
-    display: block;
-    padding: 8px 10px;
-    border-radius: 6px;
-    background: var(--color-surface-soft);
-    font-size: var(--fs-12);
-    line-height: 1.7;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
+  /* ════ Formula diff tokens (LogicPanel "Compare") ════════════════════ */
   .formula-token { display: inline-block; padding: 0 3px; margin: 0 2px 2px 0; border-radius: 4px; color: var(--color-ink-body); }
   .formula-token.added { background: var(--color-sage-soft); color: var(--color-sage-ink); }
   .formula-token.removed { background: var(--color-danger-soft); color: var(--color-danger-ink); text-decoration: line-through; }
-
-  .formula-diff-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
-  .formula-fact-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .formula-fact-group strong { font-size: var(--fs-11); font-weight: var(--fw-semibold); color: var(--color-ink); }
-  .formula-fact-list { display: flex; flex-wrap: wrap; gap: 4px; }
-  .formula-fact-chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: var(--radius-chip);
-    border: 1px solid var(--status-neutral-border);
-    background: var(--status-neutral-bg);
-    color: var(--status-neutral-text);
-    font-size: var(--fs-11);
-  }
-  .formula-fact-chip.added { border-color: var(--status-good-border); background: var(--status-good-bg); color: var(--status-good-text); }
-  .formula-fact-chip.removed { border-color: var(--status-bad-border); background: var(--status-bad-bg); color: var(--status-bad-text); }
-  .formula-fact-chip.changed { border-color: var(--status-warn-border); background: var(--status-warn-bg); color: var(--status-warn-text); }
 
   /* ════ Field reference chips ═════════════════════════════════════════ */
   .field-reference-empty { font-size: var(--fs-11); color: var(--color-ink-subtle); }
