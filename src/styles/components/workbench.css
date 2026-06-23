@@ -192,61 +192,87 @@
      At rest: a breadcrumb, the formula, and one status line. Production, diff,
      fields, and the function library tuck behind three quiet disclosures. The
      same markup reflows by container width (sidebar column → footer + rail). */
-  .logic-panel { container-type: inline-size; min-width: 0; }
+  .logic-panel { container-type: inline-size; display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
   .logic-panel--empty { font-size: var(--fs-12); color: var(--color-ink-subtle); }
-  /* The layout lives on an inner wrapper: a container can't restyle itself, so
-     the @container reflow targets this descendant, not .logic-panel. */
+  /* The editor+rail layout rides an inner wrapper: a container can't restyle
+     itself, so the @container reflow targets this descendant. The title block
+     (.lp-head) sits above it and always spans the full width. */
   .lp-layout { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+  .lp-edit { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
 
-  /* The editing surface — the hero. */
-  .lp-edit { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+  /* ── Title block: a formula-identity tile, the metric heading, a status pill ── */
+  .lp-head { display: flex; align-items: flex-start; gap: var(--space-3); min-width: 0; }
+  .lp-sig {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+    font-family: var(--font-brand);
+    font-size: 20px;
+    line-height: 1;
+  }
+  .lp-titles { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; padding-top: 1px; }
+  .lp-sub { display: inline-flex; align-items: center; gap: 4px; min-width: 0; max-width: 100%; font-size: var(--fs-12); color: var(--color-ink-muted); }
+  .lp-sub__in { flex: none; color: var(--color-ink-subtle); }
 
-  .lp-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
-
-  /* Breadcrumb: visual is the muted category, metric is the serif hero/title.
-     Stacks in the sidebar; goes inline in the wide footer (see @container). */
-  .lp-crumb { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-  .lp-crumb__sep { display: none; color: var(--color-ink-subtle); font-size: var(--fs-13); }
-
-  /* native <select> restyled as inline text — keeps keyboard/a11y for free. */
-  .lp-select { position: relative; display: inline-flex; align-items: center; gap: 6px; min-width: 0; max-width: 100%; }
-  .lp-select select {
+  /* Metric/visual as ghost controls: a heading at rest that reveals its
+     interactivity on hover/focus. Native <select> keeps keyboard + a11y. */
+  .lp-pick { position: relative; display: inline-flex; align-items: center; gap: 5px; min-width: 0; max-width: 100%; }
+  .lp-pick select {
     appearance: none;
     -webkit-appearance: none;
     max-width: 100%;
     height: auto;
-    margin: 0;
-    padding: 0 17px 0 0;
+    margin: 0 -6px;
+    padding: 1px 22px 1px 6px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     background: transparent;
     color: inherit;
     font: inherit;
     cursor: pointer;
     text-overflow: ellipsis;
+    transition: background var(--motion-fast), box-shadow var(--motion-fast);
   }
-  .lp-select select:focus-visible { outline: 2px solid var(--focus-ring-color); outline-offset: 3px; border-color: transparent; box-shadow: none; }
-  .lp-select::after {
+  .lp-pick select:hover { background: var(--color-surface-soft); }
+  .lp-pick select:focus-visible { outline: none; background: var(--color-surface-soft); box-shadow: 0 0 0 2px var(--color-accent-soft); }
+  .lp-pick::after {
     content: '';
     position: absolute;
-    right: 3px;
+    right: 1px;
     width: 6px;
     height: 6px;
-    border-right: 1.5px solid currentColor;
-    border-bottom: 1.5px solid currentColor;
+    border-right: 1.5px solid var(--color-ink-subtle);
+    border-bottom: 1.5px solid var(--color-ink-subtle);
     transform: translateY(-2px) rotate(45deg);
-    opacity: 0.45;
+    opacity: 0.7;
     pointer-events: none;
   }
-  .lp-select--visual { color: var(--color-ink-subtle); }
-  .lp-select--visual select { font-size: var(--fs-11); font-weight: var(--fw-semibold); letter-spacing: 0.06em; text-transform: uppercase; }
-  .lp-select--metric { color: var(--color-ink); }
-  .lp-select--metric select { font-family: var(--font-brand); font-size: 20px; line-height: 1.15; letter-spacing: 0.01em; }
+  .lp-pick--metric { color: var(--color-ink); }
+  .lp-pick--metric select { font-size: var(--fs-16); font-weight: var(--fw-medium); line-height: 1.3; }
+  .lp-pick--visual { color: var(--color-ink-muted); }
+  .lp-pick--visual select { font-size: var(--fs-12); }
+  .lp-pick--visual::after { width: 5px; height: 5px; right: 2px; }
 
-  .lp-head__status { display: inline-flex; align-items: center; gap: 6px; flex: none; padding-top: 3px; }
-  .lp-status-dot { width: 7px; height: 7px; border-radius: var(--radius-chip); background: var(--color-sage); flex: none; }
-  .lp-status-dot[data-tone='accent'] { background: var(--color-accent); }
-  .lp-status-label { font-size: var(--fs-11); color: var(--color-ink-subtle); }
+  .lp-head__status { display: inline-flex; align-items: center; gap: var(--space-2); flex: none; padding-top: 3px; }
+  .lp-statpill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: var(--radius-chip);
+    background: var(--color-sage-soft);
+    color: var(--color-sage-ink);
+    font-size: var(--fs-11);
+    font-weight: var(--fw-medium);
+    white-space: nowrap;
+  }
+  .lp-statpill[data-tone='draft'] { background: var(--color-accent-soft); color: var(--color-accent-strong); }
   .lp-resetall { font-size: var(--fs-11); color: var(--color-ink-muted); padding: 2px 5px; border-radius: 5px; transition: color var(--motion-fast), background var(--motion-fast); }
   .lp-resetall:hover { color: var(--color-accent-strong); background: var(--color-accent-soft); }
 
@@ -258,14 +284,11 @@
   .lp-dot[data-tone='warn'] { background: var(--color-amber); }
   .lp-dot[data-tone='good'] { background: var(--color-sage); }
 
-  /* The editor. Validity reads as a soft border/ring, never a worded pill. */
+  /* The editor — the hero. Validity reads as a soft border/ring, never a pill. */
   .lp-editor {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    padding: var(--space-3);
-    border: 1px solid var(--color-surface-soft);
-    border-radius: var(--radius-control);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border-faint);
+    border-radius: var(--radius-card);
     background: var(--color-surface-sunken);
     transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
   }
@@ -274,8 +297,9 @@
   .lp-editor[data-validity='invalid']:focus-within { border-color: var(--color-danger); box-shadow: 0 0 0 3px var(--color-danger-soft); }
 
   .lp-editor__field {
+    display: block;
     width: 100%;
-    min-height: 84px;
+    min-height: 76px;
     padding: 0;
     border: none;
     background: transparent;
@@ -288,20 +312,24 @@
   .lp-editor__field:focus { outline: none; box-shadow: none; }
   .lp-editor__field::placeholder { color: var(--color-ink-subtle); }
 
-  /* Apply is contextual — a fixed-height slot keeps it from shifting the layout. */
-  .lp-apply { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-2); min-height: 32px; }
-  .lp-apply__btn { min-height: 32px; padding: 6px 14px; font-size: var(--fs-12); background: var(--color-accent); border-color: var(--color-accent); }
-  .lp-apply__btn:hover:not(:disabled) { background: var(--color-accent-strong); border-color: var(--color-accent-strong); }
-  .lp-kbd { font-family: var(--font-mono); font-size: var(--fs-11); padding: 1px 4px; border: none; border-radius: 4px; background: rgba(255, 255, 255, 0.2); color: inherit; }
-
-  .lp-statusline { display: flex; align-items: center; gap: 6px; min-height: 16px; font-size: var(--fs-11); color: var(--color-ink-muted); }
+  /* One balanced row: validity status (left) + the contextual Apply (right).
+     The fixed min-height reserves the Apply slot so nothing jumps. */
+  .lp-actionrow { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 32px; }
+  .lp-statusline { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: var(--fs-11); color: var(--color-ink-muted); }
+  .lp-statusline > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .lp-statusline[data-tone='bad'] { color: var(--color-danger-ink); }
   .lp-statusline[data-tone='warn'] { color: var(--color-amber-ink); }
   .lp-statusline[data-tone='good'] { color: var(--color-sage-ink); }
   .lp-statusline[data-tone='muted'] { color: var(--color-ink-subtle); }
+  .lp-actionrow__btns { display: inline-flex; align-items: center; gap: var(--space-2); flex: none; }
+  .lp-apply__btn { min-height: 32px; padding: 6px 14px; font-size: var(--fs-12); background: var(--color-accent); border-color: var(--color-accent); }
+  .lp-apply__btn:hover:not(:disabled) { background: var(--color-accent-strong); border-color: var(--color-accent-strong); }
+  .lp-kbd { font-family: var(--font-mono); font-size: var(--fs-11); padding: 1px 4px; border: none; border-radius: 4px; background: rgba(255, 255, 255, 0.2); color: inherit; }
 
-  /* The three on-demand disclosures — a segmented control + one content panel. */
-  .lp-refs { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+  /* The three on-demand disclosures — a segmented control + one content panel.
+     A hairline separates it from the editor (stacked sidebar); in the footer it
+     becomes the left border of the rail instead (see @container). */
+  .lp-refs { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; padding-top: var(--space-3); border-top: 1px solid var(--color-border-faint); }
   .lp-segments {
     display: inline-flex;
     align-items: center;
@@ -398,11 +426,9 @@
      right — so diff/fields/functions live beside the formula, not below it.
      (No grid-template transition — honors the workbench layout note.) */
   @container (min-width: 560px) {
-    .lp-layout { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr); gap: var(--space-4); align-items: start; }
-    .lp-crumb { flex-direction: row; align-items: baseline; gap: 6px; flex-wrap: wrap; }
-    .lp-crumb__sep { display: inline; }
-    .lp-editor__field { min-height: 132px; }
-    .lp-refs { padding-left: var(--space-4); border-left: 1px solid var(--color-border-faint); }
+    .lp-layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(250px, 300px); gap: var(--space-4); align-items: start; }
+    .lp-editor__field { min-height: 96px; }
+    .lp-refs { padding-top: 0; border-top: none; padding-left: var(--space-4); border-left: 1px solid var(--color-border-faint); }
     .lp-segments { width: 100%; }
     .fn-palette__list { max-height: 200px; }
   }

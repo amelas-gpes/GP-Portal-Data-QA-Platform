@@ -268,45 +268,50 @@ export function LogicPanel({
   })();
 
   return (
-    <div className="logic-panel">
-      <div className="lp-layout" ref={rootRef}>
-        <div className="lp-edit">
-          <header className="lp-head">
-            <div className="lp-crumb">
-              <span className="lp-select lp-select--visual">
-                <select value={metric.visualId} aria-label="Visual" onChange={(event) => selectVisual(event.target.value)}>
-                  {VISUAL_NAMES.map((visual) => (
-                    <option key={visual.id} value={visual.id}>{visual.name}</option>
-                  ))}
-                </select>
-              </span>
-              <span className="lp-crumb__sep" aria-hidden="true">▸</span>
-              <span className="lp-select lp-select--metric">
-                {appliedDiffersFromProd ? <span className="lp-dot lp-dot--accent" aria-hidden="true" /> : null}
-                <select value={metric.id} aria-label="Metric" onChange={(event) => onSelectMetric(event.target.value)}>
-                  {metricsForVisual.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.metricName}{item.draftFormula !== item.productionFormula ? ' •' : ''}
-                    </option>
-                  ))}
-                </select>
-              </span>
-            </div>
-            <div className="lp-head__status">
-              <span
-                className="lp-status-dot"
-                data-tone={anyDraftActive ? 'accent' : 'good'}
-                title={anyDraftActive ? 'Charts are showing draft logic.' : 'Charts are on production logic.'}
-              />
-              <span className="lp-status-label">{anyDraftActive ? 'Draft active' : 'Production'}</span>
-              {anyDraftActive ? (
-                <button className="lp-resetall" type="button" onClick={onResetAll} title="Restore every metric to its production formula.">
-                  Reset all
-                </button>
-              ) : null}
-            </div>
-          </header>
+    <div className="logic-panel" ref={rootRef}>
+      <header className="lp-head">
+        <div className="lp-sig" aria-hidden="true">Σ</div>
+        <div className="lp-titles">
+          <span className="lp-pick lp-pick--metric">
+            {appliedDiffersFromProd ? <span className="lp-dot lp-dot--accent" aria-hidden="true" /> : null}
+            <select value={metric.id} aria-label="Metric" onChange={(event) => onSelectMetric(event.target.value)}>
+              {metricsForVisual.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.metricName}{item.draftFormula !== item.productionFormula ? ' •' : ''}
+                </option>
+              ))}
+            </select>
+          </span>
+          <span className="lp-sub">
+            <span className="lp-sub__in">in</span>
+            <span className="lp-pick lp-pick--visual">
+              <select value={metric.visualId} aria-label="Visual" onChange={(event) => selectVisual(event.target.value)}>
+                {VISUAL_NAMES.map((visual) => (
+                  <option key={visual.id} value={visual.id}>{visual.name}</option>
+                ))}
+              </select>
+            </span>
+          </span>
+        </div>
+        <div className="lp-head__status">
+          <span
+            className="lp-statpill"
+            data-tone={anyDraftActive ? 'draft' : 'prod'}
+            title={anyDraftActive ? 'Charts are showing draft logic.' : 'Charts are on production logic.'}
+          >
+            <span className="lp-dot" data-tone={anyDraftActive ? 'accent' : 'good'} aria-hidden="true" />
+            {anyDraftActive ? 'Draft' : 'Production'}
+          </span>
+          {anyDraftActive ? (
+            <button className="lp-resetall" type="button" onClick={onResetAll} title="Restore every metric to its production formula.">
+              Reset all
+            </button>
+          ) : null}
+        </div>
+      </header>
 
+      <div className="lp-layout">
+        <div className="lp-edit">
           <div className="lp-editor" data-validity={parseClass}>
             <textarea
               id="logic-panel-editor"
@@ -319,7 +324,14 @@ export function LogicPanel({
               placeholder={'e.g. SUM("Total Distributions")'}
               aria-label={`Formula for ${metric.metricName}`}
             />
-            <div className="lp-apply">
+          </div>
+
+          <div className="lp-actionrow">
+            <p className="lp-statusline" data-tone={statusLine.tone}>
+              {statusLine.tone !== 'muted' ? <span className="lp-dot" data-tone={statusLine.tone} aria-hidden="true" /> : null}
+              <span>{statusLine.text}</span>
+            </p>
+            <div className="lp-actionrow__btns">
               {canApply ? (
                 <Button variant="primary" className="lp-apply__btn" onClick={apply} title="Recompute the charts with this draft formula.">
                   Apply <kbd className="lp-kbd">{MOD_LABEL}↵</kbd>
@@ -332,11 +344,6 @@ export function LogicPanel({
               ) : null}
             </div>
           </div>
-
-          <p className="lp-statusline" data-tone={statusLine.tone}>
-            {statusLine.tone !== 'muted' ? <span className="lp-dot" data-tone={statusLine.tone} aria-hidden="true" /> : null}
-            <span>{statusLine.text}</span>
-          </p>
         </div>
 
         <div className="lp-refs">
