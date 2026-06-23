@@ -1,0 +1,368 @@
+/* ── ImpactPanel (right reconciliation overlay) + EvidenceDock (bottom). ──
+   Primitives (ui-*, pill, provenance-tag, empty-state) come from base.css;
+   only the chrome these two components add is styled here. RawData inside
+   the dock body (raw-*) is styled elsewhere. */
+@layer components {
+  /* ════ ImpactPanel ════════════════════════════════════════════════════ */
+
+  .impact-panel__backdrop {
+    position: fixed;
+    inset: 0;
+    background: transparent;
+    z-index: calc(var(--z-overlay) - 1);
+  }
+
+  .impact-panel {
+    position: fixed;
+    top: var(--h-topbar);
+    right: 0;
+    bottom: 0;
+    width: min(var(--w-impact), 100vw);
+    z-index: var(--z-overlay);
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface-raised);
+    border-left: 1px solid var(--color-border);
+    box-shadow: var(--shadow-overlay);
+  }
+
+  /* Verdict signal: 2px strip across the panel top + headline ink. */
+  .impact-panel::before {
+    content: '';
+    flex: none;
+    height: 2px;
+    background: var(--color-border-faint);
+  }
+  .impact-panel[data-verdict='blocked']::before { background: var(--verdict-flagged); }
+  .impact-panel[data-verdict='review']::before { background: var(--verdict-watch); }
+  .impact-panel[data-verdict='clear']::before { background: var(--verdict-approved); }
+
+  .impact-panel__header {
+    flex: none;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4) var(--space-2);
+    border-bottom: 1px solid var(--color-border-faint);
+  }
+  .impact-panel__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .impact-panel__headline {
+    font-family: var(--font-brand);
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-22);
+    line-height: var(--lh-tight);
+    color: var(--color-ink);
+  }
+  .impact-panel[data-verdict='blocked'] .impact-panel__headline { color: var(--verdict-flagged); }
+  .impact-panel[data-verdict='review'] .impact-panel__headline { color: var(--verdict-watch); }
+  .impact-panel[data-verdict='clear'] .impact-panel__headline { color: var(--verdict-approved); }
+  .impact-panel[data-verdict='computing'] .impact-panel__headline { color: var(--color-ink-muted); }
+
+  .impact-panel__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4) var(--space-4);
+  }
+  .impact-panel__body[data-state='computing'] {
+    justify-content: center;
+  }
+
+  .impact-panel__narrative {
+    font-size: var(--fs-12);
+    color: var(--color-ink-muted);
+  }
+
+  /* Blockers (invalid formulas) */
+  .impact-panel__blockers {
+    background: var(--status-bad-bg);
+    border: 1px solid var(--status-bad-border);
+    border-radius: var(--radius-control);
+    padding: var(--space-2) var(--space-3);
+  }
+  .impact-panel__blockers-title {
+    display: block;
+    font-size: var(--fs-12);
+    font-weight: var(--fw-semibold);
+  }
+  .impact-panel__blockers-list {
+    margin: var(--space-1) 0 0;
+    padding-left: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .impact-panel__blocker {
+    font-family: var(--font-mono);
+    font-size: var(--fs-11);
+    word-break: break-all;
+  }
+
+  /* Changed metric / chart chips */
+  .impact-panel__chips {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .impact-panel__chip-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .impact-panel__section-title {
+    font-size: var(--fs-11);
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-ink-subtle);
+  }
+  .impact-panel__chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    align-items: center;
+  }
+  .impact-panel__chip {
+    min-height: var(--chip-h);
+    max-width: 100%;
+  }
+  .impact-panel__chip-empty {
+    font-size: var(--fs-12);
+    color: var(--color-ink-subtle);
+  }
+
+  /* Where-to-look-first delta tables */
+  .impact-panel__leads {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .impact-panel__table-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .impact-panel__table-caption {
+    font-size: var(--fs-12);
+    font-weight: var(--fw-semibold);
+    color: var(--color-ink);
+  }
+
+  .impact-panel__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-12);
+    table-layout: auto;
+  }
+  .impact-panel__table th {
+    font-size: 10px;
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-ink-subtle);
+    text-align: left;
+    padding: 0 var(--space-2) 4px;
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+  .impact-panel__table th:first-child,
+  .impact-panel__table td:first-child { padding-left: 0; }
+  .impact-panel__table th:last-child,
+  .impact-panel__table td:last-child { padding-right: 0; }
+  .impact-panel__table th.impact-panel__num-head { text-align: right; }
+
+  .impact-panel__table td {
+    height: var(--row-table);
+    padding: 2px var(--space-2);
+    border-bottom: 1px solid var(--color-border-faint);
+    vertical-align: middle;
+    color: var(--color-ink-body);
+  }
+
+  .impact-panel__row { cursor: pointer; }
+  .impact-panel__row:hover td { background: var(--color-surface-soft); }
+  .impact-panel__row:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: -2px;
+  }
+
+  .impact-panel__cell-investor {
+    font-weight: var(--fw-medium);
+    color: var(--color-ink);
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .impact-panel__cell-company {
+    color: var(--color-ink-muted);
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .impact-panel__cell-metric {
+    max-width: 96px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .impact-panel__metric-link {
+    font-family: var(--font-mono);
+    font-size: var(--fs-11);
+    color: var(--color-accent-strong);
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .impact-panel__metric-link:hover { color: var(--color-accent); }
+  .impact-panel__metric-link:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: 1px;
+    border-radius: 2px;
+  }
+
+  .impact-panel__mono {
+    font-family: var(--font-mono);
+    font-size: var(--fs-11);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .impact-panel__row[data-direction='up'] .impact-panel__delta,
+  .impact-panel__row[data-direction='up'] .impact-panel__delta-pct { color: var(--delta-positive); }
+  .impact-panel__row[data-direction='down'] .impact-panel__delta,
+  .impact-panel__row[data-direction='down'] .impact-panel__delta-pct { color: var(--delta-negative); }
+  .impact-panel__row[data-direction='flat'] .impact-panel__delta,
+  .impact-panel__row[data-direction='flat'] .impact-panel__delta-pct { color: var(--color-ink-subtle); }
+
+  .impact-panel__cell-flags { white-space: nowrap; }
+  .impact-panel__cell-flags .impact-panel__flag { margin-right: var(--space-1); }
+  .impact-panel__cell-flags .impact-panel__flag:last-child { margin-right: 0; }
+  .impact-panel__no-flags { color: var(--color-ink-subtle); }
+
+  .impact-panel__table-empty {
+    font-size: var(--fs-12);
+    color: var(--color-ink-subtle);
+    padding: var(--space-2) 0;
+  }
+  .impact-panel__table-note {
+    font-size: var(--fs-11);
+    color: var(--color-ink-subtle);
+    padding-top: var(--space-1);
+  }
+
+  .impact-panel__footer {
+    flex: none;
+    font-size: var(--fs-11);
+    color: var(--color-ink-subtle);
+    border-top: 1px solid var(--color-border-faint);
+    padding-top: var(--space-2);
+  }
+
+  .impact-panel__computing { flex: 1; }
+
+  /* ════ EvidenceDock ═══════════════════════════════════════════════════ */
+
+  .evidence-dock {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--h-dock);
+    z-index: var(--z-dock);
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface-raised);
+    border-top: 1px solid var(--color-border);
+    box-shadow: var(--shadow-overlay);
+    transition: transform var(--motion-base) ease;
+  }
+  .evidence-dock[data-tall='true'] { height: 60vh; }
+
+  /* Closed: slide out but keep mounted so RawData state survives. */
+  .evidence-dock[data-open='false'] {
+    transform: translateY(105%);
+    pointer-events: none;
+    visibility: hidden;
+    transition: transform var(--motion-base) ease, visibility 0s linear var(--motion-base);
+  }
+
+  .evidence-dock__bar {
+    position: relative;
+    flex: none;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0 var(--space-3);
+    border-bottom: 1px solid var(--color-border-faint);
+  }
+  .evidence-dock__grip {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 3px;
+    border-radius: var(--radius-chip);
+    background: var(--color-border-strong);
+  }
+  .evidence-dock__title {
+    font-size: var(--fs-12);
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.02em;
+    color: var(--color-ink);
+  }
+  .evidence-dock__actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .evidence-dock__height-toggle[aria-pressed='true'] { color: var(--color-accent-strong); }
+
+  /* Copy ticket summary: quiet text button; the label itself is the brief
+     inline confirmation ("Copied" / "Copy failed"). */
+  .evidence-dock__copy {
+    height: 24px;
+    padding: 0 var(--space-2);
+    font-size: var(--fs-11);
+    color: var(--color-ink-muted);
+    white-space: nowrap;
+  }
+  .evidence-dock__copy:hover:not(:disabled) { color: var(--color-ink); }
+  .evidence-dock__copy[data-state='copied'] { color: var(--color-sage-ink); }
+  .evidence-dock__copy[data-state='failed'] { color: var(--color-danger-ink); }
+
+  .evidence-dock__body {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .evidence-dock,
+    .evidence-dock[data-open='false'] { transition: none; }
+  }
+}
+
+/* Drag-to-resize: the bar is a grab handle; transitions pause mid-drag so the
+   dock tracks the pointer directly. */
+@layer components {
+  .evidence-dock__bar { cursor: grab; touch-action: none; user-select: none; }
+  .evidence-dock[data-dragging='true'] .evidence-dock__bar { cursor: grabbing; }
+  .evidence-dock[data-dragging='true'] { transition: none; }
+}

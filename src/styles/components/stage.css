@@ -1,0 +1,706 @@
+/* ── Stage: KPI band, findings card, chart cards, instance headers, hit popover. ── */
+@layer components {
+  /* ── ChartStage shell ────────────────────────────────────────────────── */
+  .chart-stage {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  /* ── KpiBand: unboxed facts resting in whitespace ────────────────────── */
+  .kpi-band {
+    display: flex;
+    align-items: center;
+    gap: clamp(var(--space-6), 4vw, 56px);
+    height: var(--h-kpi);
+    padding: 0 var(--space-2);
+    background: transparent;
+    overflow-x: auto;
+  }
+
+  .kpi-band__item {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    column-gap: var(--space-2);
+    align-items: baseline;
+    white-space: nowrap;
+  }
+
+  .kpi-band__label {
+    grid-column: 1 / -1;
+    font-size: var(--fs-11);
+    font-weight: var(--fw-medium);
+    color: var(--color-ink-subtle);
+  }
+
+  .kpi-band__value {
+    font-family: var(--font-mono);
+    font-size: var(--fs-16);
+    font-weight: var(--fw-medium);
+    color: var(--color-ink);
+    line-height: var(--lh-tight);
+  }
+
+  .kpi-band[data-loading='true'] .kpi-band__value {
+    min-width: 96px;
+    height: 12px;
+  }
+
+  .kpi-band__delta {
+    font-family: var(--font-mono);
+    font-size: var(--fs-11);
+    font-weight: var(--fw-medium);
+    line-height: 1;
+    padding: 1px 6px;
+    border: 1px solid var(--color-border-faint);
+    border-radius: var(--radius-chip);
+    background: var(--color-surface);
+    white-space: nowrap;
+  }
+  .kpi-band__delta[data-tone='pos'] { color: var(--delta-positive); }
+  .kpi-band__delta[data-tone='neg'] { color: var(--delta-negative); }
+
+  /* ── FindingsCard: full-width bordered card above the grid ───────────── */
+  .findings-card {
+    grid-column: 1 / -1;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-surface);
+    padding: var(--space-2) var(--space-3) var(--space-3);
+  }
+  .findings-card:has(.findings-card__section[data-tier='warning']) {
+    border-left: 3px solid var(--sev-warning);
+  }
+  .findings-card:has(.findings-card__section[data-tier='critical']) {
+    border-left: 3px solid var(--sev-critical);
+  }
+
+  .findings-card__header {
+    font-size: var(--fs-12);
+    font-weight: var(--fw-semibold);
+    color: var(--color-ink);
+    padding-bottom: var(--space-1);
+  }
+
+  .findings-card__section { padding-top: var(--space-1); }
+
+  .findings-card__section-title {
+    font-size: var(--fs-11);
+    font-weight: var(--fw-semibold);
+    color: var(--color-ink-subtle);
+    padding: 2px 0;
+  }
+  .findings-card__section[data-tier='critical'] .findings-card__section-title { color: var(--sev-critical); }
+  .findings-card__section[data-tier='warning'] .findings-card__section-title { color: var(--color-amber-ink); }
+
+  .findings-card__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .findings-card__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--row-table);
+    padding: 3px 0;
+    border-top: 1px solid var(--color-border-faint);
+  }
+  .findings-card__row:first-child { border-top: none; }
+
+  .findings-card__row-body {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .findings-card__scenario {
+    font-size: var(--fs-12);
+    font-weight: var(--fw-semibold);
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+
+  .findings-card__message {
+    font-size: var(--fs-12);
+    color: var(--color-ink-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .findings-card__rows {
+    font-family: var(--font-mono);
+    font-size: var(--fs-11);
+    color: var(--color-ink-subtle);
+    white-space: nowrap;
+  }
+
+  .findings-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+  }
+
+  .findings-card__action {
+    padding: 3px 10px;
+    font-size: var(--fs-12);
+    box-shadow: none;
+  }
+
+  .findings-card__rows-only,
+  .hit-popover__rows-only {
+    font-size: var(--fs-11);
+    font-style: italic;
+    color: var(--color-ink-subtle);
+    white-space: nowrap;
+  }
+
+  .findings-card__info {
+    font-size: var(--fs-11);
+    color: var(--color-ink-subtle);
+    padding-top: var(--space-2);
+  }
+
+  /* ── Individual-investor instance sections ───────────────────────────── */
+  .chart-stage__instance {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    min-width: 0;
+  }
+
+  .chart-stage__instance-header {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding: 0 var(--space-1);
+    border-bottom: 1px solid var(--color-border-faint);
+    padding-bottom: var(--space-1);
+  }
+
+  .chart-stage__instance-name {
+    font-family: var(--font-brand);
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-16);
+    color: var(--color-ink);
+    line-height: var(--lh-tight);
+  }
+
+  .chart-stage__instance-meta {
+    font-family: var(--font-mono);
+    font-size: var(--fs-11);
+    color: var(--color-ink-subtle);
+    white-space: nowrap;
+  }
+
+  /* ── ChartCard ────────────────────────────────────────────────────────── */
+  .chart-card {
+    display: flex;
+    flex-direction: column;
+    min-height: var(--card-min-h);
+    min-width: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-faint);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-surface);
+    transition: border-color var(--motion-fast);
+  }
+  .chart-card:hover { border-color: var(--color-border); }
+  .chart-card-selectable { cursor: pointer; }
+  .chart-card-selected {
+    box-shadow: inset 0 3px 0 var(--color-accent), var(--shadow-surface);
+    border-color: var(--color-border);
+  }
+  /* Definite height (not just a floor) so the expanded card's chart and inline
+     data table can share a fixed total that the splitter trades between. Sized
+     to fit below the sticky top bar after the card scrolls into focus, so the
+     table never lands below the fold. */
+  .chart-card-expanded {
+    height: min(82vh, 1000px);
+    min-height: min(70vh, 560px);
+  }
+  .chart-card-empty .chart-card__body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-ink-subtle);
+    font-size: var(--fs-12);
+  }
+
+  .chart-card__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: 36px;
+    flex: none;
+    padding: 0 var(--space-4);
+    margin-top: var(--space-2);
+  }
+
+  .chart-card__title {
+    flex: 1;
+    /* The title is the card's identity — it never loses the flex fight to
+       its own badges. Badges truncate; the name stays readable. */
+    min-width: 14ch;
+    font-size: var(--fs-13);
+    font-weight: var(--fw-semibold);
+    color: var(--color-ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .chart-card__signals .severity-pill,
+  .chart-card__signals .chart-card__badge {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .chart-card__signals {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    /* Shrinkable: when space runs out the badges compress (each ellipsizes),
+       never the title. */
+    flex: 0 1 auto;
+    min-width: 0;
+    height: var(--chip-h);
+  }
+
+  .chart-card__badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--fs-11);
+    font-weight: var(--fw-medium);
+    line-height: 1;
+    padding: 3px 7px;
+    border-radius: var(--radius-chip);
+    border: 1px solid var(--status-neutral-border);
+    background: var(--status-neutral-bg);
+    color: var(--status-neutral-text);
+    white-space: nowrap;
+  }
+  .chart-card__badge[data-tone='good'] { background: var(--status-good-bg); border-color: var(--status-good-border); }
+  .chart-card__badge[data-tone='warn'] { background: var(--status-warn-bg); border-color: var(--status-warn-border); }
+  .chart-card__badge[data-tone='bad'] { background: var(--status-bad-bg); border-color: var(--status-bad-border); }
+
+  .chart-card__info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--chip-h);
+    height: var(--chip-h);
+    color: var(--color-ink-subtle);
+    cursor: help;
+  }
+
+  .chart-card__expand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--chip-h);
+    height: var(--chip-h);
+    border-radius: 6px;
+    color: var(--color-ink-muted);
+    transition: background var(--motion-fast), color var(--motion-fast);
+  }
+  .chart-card__expand:hover {
+    background: var(--color-surface-sunken);
+    color: var(--color-ink);
+  }
+
+  .chart-card__metrics {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--chip-h);
+    flex: none;
+    padding: 0 var(--space-4);
+    margin-bottom: var(--space-1);
+  }
+
+  /* Metric chips read as quiet labels; the chrome appears only on hover,
+     when "this is editable" becomes the relevant message. */
+  .chart-card__metric-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: calc(var(--chip-h) - 4px);
+    padding: 0 8px;
+    font-size: var(--fs-11);
+    font-weight: var(--fw-medium);
+    color: var(--color-ink-muted);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-chip);
+    white-space: nowrap;
+    transition: border-color var(--motion-fast), color var(--motion-fast), background var(--motion-fast);
+  }
+  .chart-card__metric-chip:hover {
+    background: var(--color-surface);
+    border-color: var(--color-accent);
+    color: var(--color-ink);
+  }
+  .chart-card__metric-chip[data-dirty='true'] { color: var(--color-ink); }
+
+  .chart-card__dirty-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    flex: none;
+  }
+
+  .chart-card__body {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    padding: var(--space-3) var(--space-4) var(--space-4);
+  }
+
+  .chart-card__footer {
+    flex: none;
+    font-size: var(--fs-11);
+    color: var(--color-ink-subtle);
+    padding: 6px var(--space-4);
+    border-top: 1px solid var(--color-border-faint);
+  }
+
+  /* ── Expanded-card split: chart over inline data table ───────────────────
+     The body becomes a vertical stack — chart region (fractional height set
+     inline), a drag handle, and the data table filling the rest. Scoped to
+     .chart-card-expanded so it outranks the .chart-card-empty body rule. */
+  .chart-card-expanded .chart-card__body--split {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 0;
+    overflow: hidden;
+  }
+  .chart-card__chart-region {
+    flex: none;
+    min-height: 0;
+    overflow: hidden;
+    padding: var(--space-3) var(--space-4) var(--space-2);
+  }
+  .chart-card__detail-region {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-top: 1px solid var(--color-border-faint);
+  }
+
+  .chart-card__splitter {
+    position: relative;
+    flex: none;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: row-resize;
+    touch-action: none;
+    user-select: none;
+    background: var(--color-surface-sunken);
+    border-top: 1px solid var(--color-border-faint);
+  }
+  .chart-card__splitter:hover,
+  .chart-card__body--split[data-dragging='true'] .chart-card__splitter {
+    background: var(--color-accent-surface);
+  }
+  .chart-card__splitter:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: -2px;
+  }
+  .chart-card__splitter-grip {
+    width: 40px;
+    height: 3px;
+    border-radius: var(--radius-chip);
+    background: var(--color-border-strong);
+  }
+  .chart-card__splitter:hover .chart-card__splitter-grip,
+  .chart-card__body--split[data-dragging='true'] .chart-card__splitter-grip {
+    background: var(--color-accent);
+  }
+  /* Pause chart transitions mid-drag so the resize tracks the pointer. */
+  .chart-card__body--split[data-dragging='true'] * { transition: none !important; }
+
+  /* Inline RawData under an expanded chart: fill the detail region so the
+     virtualized table grows as the splitter is dragged. */
+  .raw-panel--inline {
+    flex: 1 1 0;
+    min-height: 0;
+    padding: var(--space-2) var(--space-3) var(--space-3);
+  }
+  .expanded-table {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .expanded-table--message {
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    color: var(--color-ink-subtle);
+    font-size: var(--fs-12);
+  }
+
+  /* Shared chart footnote — hoisted from per-card footers so one quiet line
+     serves the whole grid instead of repeating under every chart. */
+  .chart-stage__footnote {
+    grid-column: 1 / -1;
+    font-size: var(--fs-11);
+    color: var(--color-ink-subtle);
+    padding: 0 var(--space-2);
+  }
+
+  /* ── HitPopover (position/size set inline by the component) ──────────── */
+  .hit-popover__backdrop { z-index: var(--z-popover); }
+
+  .hit-popover {
+    z-index: var(--z-popover);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-popover);
+    box-shadow: var(--shadow-overlay);
+    padding: var(--space-3);
+    font-size: var(--fs-12);
+  }
+
+  .hit-popover__header {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border-faint);
+    margin-bottom: var(--space-2);
+  }
+
+  .hit-popover__title {
+    font-size: var(--fs-13);
+    font-weight: var(--fw-semibold);
+    color: var(--color-ink);
+  }
+
+  .hit-popover__subtitle {
+    font-size: var(--fs-11);
+    color: var(--color-ink-subtle);
+    overflow-wrap: anywhere;
+  }
+
+  .hit-popover__empty {
+    font-size: var(--fs-12);
+    color: var(--color-ink-muted);
+    padding: var(--space-2) 0;
+  }
+
+  .hit-popover__section + .hit-popover__section { margin-top: var(--space-2); }
+
+  .hit-popover__section-title {
+    font-size: var(--fs-11);
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-ink-subtle);
+    padding-bottom: 2px;
+  }
+  .hit-popover__section[data-tier='critical'] .hit-popover__section-title { color: var(--sev-critical); }
+  .hit-popover__section[data-tier='warning'] .hit-popover__section-title { color: var(--color-amber-ink); }
+
+  .hit-popover__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .hit-popover__row {
+    padding: var(--space-2) 0;
+    border-top: 1px solid var(--color-border-faint);
+  }
+  .hit-popover__row:first-child { border-top: none; }
+
+  .hit-popover__row-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .hit-popover__scenario {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--fs-12);
+    font-weight: var(--fw-semibold);
+    color: var(--color-ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hit-popover__rows {
+    font-family: var(--font-mono);
+    font-size: var(--fs-11);
+    color: var(--color-ink-subtle);
+    white-space: nowrap;
+  }
+
+  .hit-popover__message {
+    font-size: var(--fs-12);
+    color: var(--color-ink-body);
+    line-height: var(--lh-base);
+    margin: var(--space-1) 0;
+  }
+
+  .hit-popover__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    flex-wrap: wrap;
+  }
+
+  .hit-popover__action {
+    padding: 2px 7px;
+    font-size: var(--fs-12);
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    color: var(--color-accent-strong);
+  }
+  .hit-popover__action:hover:not(:disabled) {
+    background: var(--color-accent-surface);
+    border-color: transparent;
+  }
+
+  .hit-popover__expected { margin-top: var(--space-2); }
+
+  .hit-popover__expected-summary {
+    font-size: var(--fs-11);
+    font-weight: var(--fw-medium);
+    color: var(--color-ink-muted);
+    cursor: pointer;
+    padding: 2px 0;
+  }
+  .hit-popover__expected-summary:hover { color: var(--color-ink); }
+}
+
+/* Compact findings: collapsed shows top rows; expanded scrolls internally. */
+@layer components {
+  .findings-card__summary { color: var(--color-ink-muted); font-size: var(--fs-12); }
+  .findings-card__toggle { margin-left: auto; font-size: var(--fs-12); }
+  .findings-card__more { color: var(--color-ink-subtle); font-size: var(--fs-11); margin: 4px 0 0; }
+  .findings-card[data-expanded='true'] .findings-card__section { max-height: 320px; overflow-y: auto; }
+}
+
+/* Findings as a one-line disclosure: quiet summary row, full list on demand. */
+@layer components {
+  .findings-card { padding: 0; }
+  .findings-card__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: 8px var(--space-3);
+    font-size: var(--fs-12);
+    color: var(--color-ink);
+    cursor: pointer;
+    border-radius: var(--radius-card);
+    text-align: left;
+  }
+  .findings-card__header:hover { background: var(--color-surface-soft); }
+  .findings-card__header strong { font-size: var(--fs-13); }
+  .findings-card__chevron { color: var(--color-ink-subtle); font-size: var(--fs-11); width: 12px; }
+  .findings-card__summary { color: var(--color-ink-muted); }
+  .findings-card__toggle-hint { margin-left: auto; color: var(--color-ink-subtle); font-size: var(--fs-11); }
+  .findings-card[data-expanded='true'] .findings-card__header { border-bottom: 1px solid var(--color-border-faint); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .findings-card__section { padding: var(--space-2) var(--space-3); }
+}
+
+/* Hit popover section titles carry the pill that matches the chart pill. */
+@layer components {
+  .hit-popover__section-title { display: flex; align-items: center; gap: var(--space-2); }
+  .findings-card__row .severity-dot { margin-top: 5px; }
+}
+
+
+/* Copy chart as PNG / copy data as TSV: quiet icon buttons revealed on hover. */
+@layer components {
+  .chart-card__copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity var(--motion-fast);
+  }
+  .chart-card:hover .chart-card__copy,
+  .chart-card__copy:focus-within { opacity: 1; }
+
+  .chart-card__copy-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--chip-h);
+    height: var(--chip-h);
+    border-radius: 6px;
+    color: var(--color-ink-muted);
+    transition: background var(--motion-fast), color var(--motion-fast);
+  }
+  .chart-card__copy-btn:hover:not(:disabled) {
+    background: var(--color-surface-sunken);
+    color: var(--color-ink);
+  }
+  .chart-card__copy-btn[data-state='copied'],
+  .chart-card__copy-btn[data-state='saved'] { color: var(--delta-positive); }
+  .chart-card__copy-btn[data-state='error'] { color: var(--sev-critical); }
+
+  /* Brief inline confirmation; absolutely positioned so the header never shifts. */
+  .chart-card__copy-flash {
+    position: absolute;
+    top: calc(100% + 2px);
+    right: 0;
+    padding: 1px 6px;
+    font-size: var(--fs-11);
+    font-weight: var(--fw-medium);
+    line-height: 1.4;
+    color: var(--delta-positive);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-faint);
+    border-radius: var(--radius-chip);
+    box-shadow: var(--shadow-surface);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 5;
+  }
+}
+
+/* Tier-scoped popover: the unfocused tier collapses to a one-line disclosure. */
+@layer components {
+  .hit-popover__other-tier {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: 8px 0;
+    margin-top: var(--space-2);
+    border-top: 1px solid var(--color-border-faint);
+    font-size: var(--fs-12);
+    color: var(--color-ink-muted);
+    cursor: pointer;
+    text-align: left;
+  }
+  .hit-popover__other-tier:hover { color: var(--color-ink); }
+  .hit-popover__other-tier .severity-pill { flex: none; }
+}

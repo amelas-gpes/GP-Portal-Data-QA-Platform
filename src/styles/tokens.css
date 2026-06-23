@@ -1,0 +1,128 @@
+/* ── v2 design tokens — the single :root. ─────────────────────────────────
+   Brand values carried from the settled last layer of v1 index.css
+   (12093–12152, 14871+). #fffefd (card) and #756f68 (AA subtle ink) are
+   documented-canonical — do not change. No hex anywhere else in src/styles. */
+@layer tokens {
+  :root {
+    /* Canvas & surfaces */
+    --color-canvas: #f7f5ef;
+    --color-canvas-cool: #f2efe8;
+    --color-surface: #fffefd;
+    --color-surface-raised: #ffffff;
+    --color-surface-sunken: #f0ece2;
+    --color-surface-soft: #f7f4eb;
+    --color-border: rgba(82, 70, 54, 0.16);
+    --color-border-strong: rgba(82, 70, 54, 0.24);
+    --color-border-faint: rgba(82, 70, 54, 0.08);
+
+    /* Ink */
+    --color-ink: #1a1814;
+    --color-ink-body: #3b3833;
+    --color-ink-muted: #6b6660;
+    --color-ink-subtle: #756f68; /* WCAG AA documented tier — do not regress */
+    --color-ink-inverse: #fffefd;
+
+    /* Brand accents */
+    --color-accent: #c96442;
+    --color-accent-strong: #9d442b;
+    --color-accent-soft: #f8e8e0;
+    --color-accent-surface: #fff3ed;
+    --color-amber: #b07a2b;
+    --color-amber-soft: #f6ecd6;
+    --color-amber-ink: #734d18;
+    --color-sage: #5b8266;
+    --color-sage-soft: #e5efe5;
+    --color-sage-ink: #365d42;
+    --color-danger: #b55248;
+    --color-danger-soft: #f8e2df;
+    --color-danger-ink: #84362f;
+
+    /* Severity */
+    --sev-critical: var(--color-accent-strong);
+    --sev-critical-bg: var(--color-accent-soft);
+    --sev-warning: var(--color-amber);
+    --sev-warning-bg: var(--color-amber-soft);
+    --sev-info: var(--color-ink-subtle);
+
+    /* Diff & verdict */
+    --ghost-draft: var(--color-accent);
+    --ghost-sim: var(--color-amber);
+    --delta-negative: var(--color-danger-ink);
+    --delta-positive: var(--color-sage-ink);
+    --verdict-approved: var(--color-sage);
+    --verdict-watch: var(--color-amber);
+    --verdict-flagged: var(--color-accent-strong);
+    --mode-tint: var(--color-accent);
+
+    /* Status triads (kept naming from v1) */
+    --status-good-bg: var(--color-sage-soft);
+    --status-good-border: rgba(91, 130, 102, 0.45);
+    --status-good-text: var(--color-sage-ink);
+    --status-warn-bg: var(--color-amber-soft);
+    --status-warn-border: rgba(176, 122, 43, 0.45);
+    --status-warn-text: var(--color-amber-ink);
+    --status-bad-bg: var(--color-danger-soft);
+    --status-bad-border: rgba(181, 82, 72, 0.45);
+    --status-bad-text: var(--color-danger-ink);
+    --status-neutral-bg: var(--color-surface-soft);
+    --status-neutral-border: var(--color-border);
+    --status-neutral-text: var(--color-ink-muted);
+
+    /* Typography */
+    --font-ui: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --font-brand: 'Instrument Serif', Georgia, serif;
+    --font-mono: 'JetBrains Mono', 'Cascadia Mono', ui-monospace, monospace;
+    --fs-11: 11px; --fs-12: 12px; --fs-13: 13px; --fs-14: 14px;
+    --fs-16: 16px; --fs-22: 22px; --fs-28: 28px;
+    --lh-tight: 1.2;
+    --lh-base: 1.45;
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-semibold: 600;
+    --fw-bold: 700;
+
+    /* Density */
+    --hit-primary: 40px;
+    --row-rail: 38px;
+    --row-table: 28px;
+    --chip-h: 24px;
+    --icon-btn: 28px;
+
+    /* Layout */
+    --h-topbar: 56px;
+    --h-stageheader: 64px;
+    --h-reconcile: 40px;
+    --w-rail: 260px;
+    --w-drawer: 420px;
+    --w-impact: 500px;
+    --h-dock: 320px;
+    --h-kpi: 60px;
+    --card-min-h: 280px;
+    --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px;
+
+    /* Shape & elevation */
+    --radius-card: 10px;
+    --radius-control: 8px;
+    --radius-chip: 999px;
+    --radius-popover: 10px;
+    --shadow-surface: 0 1px 2px rgba(46, 42, 36, 0.06);
+    --shadow-control: 0 1px 2px rgba(46, 42, 36, 0.08);
+    --shadow-overlay: 0 12px 36px rgba(46, 42, 36, 0.18);
+
+    /* Motion & state */
+    --motion-fast: 120ms;
+    --motion-base: 200ms;
+    --veil-opacity: 0.5;
+    --veil-grace: 120ms;
+    --focus-ring-color: var(--color-accent-strong);
+
+    /* Z scale */
+    --z-sticky: 30;
+    --z-dock: 40;
+    --z-drawer: 50;
+    --z-popover: 60;
+    --z-overlay: 70;
+    --z-modal: 80;
+    --z-chart-tooltip: 90;
+  }
+}

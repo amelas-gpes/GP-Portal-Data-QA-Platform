@@ -1,0 +1,149 @@
+/* ── State signaling: stale veil, mode tint, verdict marks, severity dots. ─ */
+@layer states {
+  /* Stale veil: applied only after the 120ms grace so cache hits never flash */
+  .chart-stage { transition: opacity var(--motion-fast) ease var(--veil-grace); }
+  .chart-stage[data-stale='true'] { opacity: var(--veil-opacity); pointer-events: none; }
+
+  .stage-header__shimmer {
+    height: 2px;
+    width: 100%;
+    background: transparent;
+    overflow: hidden;
+    border-radius: 1px;
+  }
+  .stage-header__shimmer[data-active='true'] { background: var(--color-accent-soft); }
+  .stage-header__shimmer[data-active='true']::after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 30%;
+    background: var(--color-accent);
+    animation: shimmer-slide 1s ease-in-out infinite;
+  }
+  @keyframes shimmer-slide {
+    0% { transform: translateX(-120%); }
+    100% { transform: translateX(420%); }
+  }
+
+  /* Verdict marks */
+  [data-verdict='approved'] { color: var(--verdict-approved); }
+  [data-verdict='watch'] { color: var(--verdict-watch); }
+  [data-verdict='flagged'] { color: var(--verdict-flagged); }
+
+  /* Severity dots (rail rows) */
+  .severity-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .severity-dot[data-severity='critical'] { background: var(--sev-critical); }
+  .severity-dot[data-severity='warning'] { background: transparent; border: 1.5px solid var(--sev-warning); }
+  .severity-dot[data-severity='info'], .severity-dot[data-severity='clean'] { background: transparent; }
+
+  /* Delta tones */
+  [data-delta-tone='pos'] { color: var(--delta-positive); }
+  [data-delta-tone='neg'] { color: var(--delta-negative); }
+
+  /* Changed-lens dimming */
+  .chart-card-dimmed { opacity: 0.38; }
+  .chart-card-dimmed:hover { opacity: 0.9; }
+  .chart-card__nochange { font-size: var(--fs-11); color: var(--color-ink-subtle); }
+
+  /* Focus mode: hide every card except the expanded one. Lives in states so
+     it outranks the components layer's `.chart-card { display: flex }`. */
+  .chart-card-concealed { display: none; }
+
+  /* Generic tone hooks */
+  [data-tone='good'] { color: var(--status-good-text); }
+  [data-tone='warn'] { color: var(--status-warn-text); }
+  [data-tone='bad'] { color: var(--status-bad-text); }
+
+  /* The top bar owns anchored popovers (filters, session recap, mode menu).
+     It must stack above the other sticky bars or its popovers paint underneath
+     the stage header; lives in states so it outranks the components layer. */
+  .top-bar { z-index: calc(var(--z-sticky) + 5); }
+
+  /* Rail collapse while the drawer is open on narrow viewports. Lives in the
+     states layer so it outranks the components layer's .queue-rail display. */
+  @media (max-width: 1439px) {
+    .workbench[data-drawer-open='true'] .queue-rail { display: none; }
+  }
+
+  /* ── Session persistence layer: restore prompt + post-import recap card. ──
+     Rendered into a dedicated body-level root by useReviewPersistence; quiet
+     top-right stack under the top bar, dismissed by Esc / the first verdict. */
+  .session-layer {
+    position: fixed;
+    top: calc(var(--h-topbar) + var(--space-3));
+    right: var(--space-3);
+    z-index: var(--z-overlay);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-2);
+    pointer-events: none;
+  }
+  .session-card {
+    pointer-events: auto;
+    width: 340px;
+    max-width: calc(100vw - 2 * var(--space-4));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-overlay);
+    font-size: var(--fs-12);
+    color: var(--color-ink-body);
+  }
+  .session-card--restore { border-left: 3px solid var(--color-accent); }
+
+  .session-card__header { display: flex; align-items: flex-start; gap: var(--space-2); }
+  .session-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    flex: none;
+    color: var(--color-accent);
+    background: var(--color-accent-soft);
+  }
+  .session-card__copy { flex: 1; min-width: 0; }
+  .session-card__copy strong { display: block; font-size: var(--fs-13); color: var(--color-ink); }
+  .session-card__copy span {
+    display: block;
+    font-size: var(--fs-12);
+    color: var(--color-ink-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .session-card__dismiss { flex: none; margin-left: auto; }
+
+  .session-card__facts { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); }
+  .session-card__fact strong {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--fs-13);
+    font-weight: var(--fw-semibold);
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .session-card__fact span { font-size: var(--fs-11); color: var(--color-ink-subtle); }
+
+  .session-card__warnings {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 8px 10px 8px 24px;
+    border-radius: var(--radius-control);
+    background: var(--color-amber-soft);
+    color: var(--color-amber-ink);
+    font-size: var(--fs-11);
+  }
+
+  .session-card__actions { display: flex; justify-content: flex-end; gap: var(--space-2); }
+  .session-card__primary { min-height: 30px; }
+  .session-card__hint { font-size: var(--fs-11); color: var(--color-ink-subtle); }
+}

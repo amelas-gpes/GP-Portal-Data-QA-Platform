@@ -1,0 +1,288 @@
+/* ── Scenario explorer: section switch, investor profile, scenario directory. ── */
+@layer components {
+  /* ── Section switch (Investor ⇄ Scenarios) ─────────────────────────────── */
+  .section-switch {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    background: var(--color-surface-sunken);
+    border-radius: var(--radius-chip);
+    width: max-content;
+  }
+  .section-switch button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--color-ink-muted);
+    font: var(--fw-semibold) var(--fs-13) / 1 var(--font-ui);
+    padding: var(--space-2) var(--space-4);
+    border-radius: calc(var(--radius-chip) - 2px);
+    cursor: pointer;
+    transition: color var(--motion-fast);
+  }
+  .section-switch button:hover { color: var(--color-ink-body); }
+  .section-switch button[data-active='true'] {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-control);
+  }
+
+  /* ── Sign tokens: tinted +/−/0 glyphs shared across scenario views ─────── */
+  .scn-label { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 0 5px; min-width: 0; }
+  .scn-label__word { font: var(--fw-medium) var(--fs-12) / 1.3 var(--font-ui); color: var(--color-ink-body); }
+  .scn-label__sep { color: var(--color-border-strong); }
+  .scn-sig { display: inline-flex; align-items: baseline; gap: 3px; }
+  .scn-sign {
+    font: var(--fw-semibold) var(--fs-12) / 1 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .scn-sign[data-sign='pos'] { color: var(--color-sage-ink); }
+  .scn-sign[data-sign='neg'] { color: var(--color-accent-strong); }
+  .scn-sign[data-sign='zero'] { color: var(--color-ink-subtle); }
+
+  /* ── Investor profile: collapsible scenario context (charts stay the star) ─ */
+  .investor-scenarios {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-faint);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-surface);
+    overflow: hidden;
+  }
+
+  /* The summary bar — a meaningful fingerprint, not an empty collapsed strip. */
+  .investor-scenarios__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    min-height: 38px;
+    text-align: left;
+    appearance: none;
+    border: none;
+    background: transparent;
+    padding: var(--space-2) var(--space-3);
+    cursor: pointer;
+    transition: background var(--motion-fast);
+  }
+  .investor-scenarios__bar:hover { background: var(--color-surface-soft); }
+  .investor-scenarios__chevron { flex: none; color: var(--color-ink-subtle); }
+  .investor-scenarios__bar-title {
+    flex: none;
+    font: var(--fw-semibold) var(--fs-13) / 1 var(--font-ui);
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+  .investor-scenarios__bar-hint {
+    flex: none;
+    margin-left: auto;
+    font: var(--fw-medium) var(--fs-11) / 1 var(--font-ui);
+    color: var(--color-ink-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Fingerprint: each visual's current sign pattern, glanceable. */
+  .investor-scenarios__fingerprint {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    padding-left: var(--space-1);
+  }
+  .scn-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 9px;
+    border-radius: var(--radius-chip);
+    background: var(--color-surface-soft);
+    border: 1px solid var(--color-border-faint);
+  }
+  .scn-chip__name { font: var(--fw-medium) var(--fs-11) / 1 var(--font-ui); color: var(--color-ink-muted); white-space: nowrap; }
+
+  /* Expanded body: the full per-visual timeline. */
+  .investor-scenarios__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4) var(--space-4);
+    border-top: 1px solid var(--color-border-faint);
+  }
+  .investor-scenarios__sub { color: var(--color-ink-subtle); font: var(--fw-regular) var(--fs-12) / 1 var(--font-ui); }
+  .investor-scenarios__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .investor-scenarios__legend { margin: 0; color: var(--color-ink-subtle); font: var(--fw-regular) var(--fs-12) / 1.4 var(--font-ui); }
+  .investor-scenarios__legend b { color: var(--color-ink-body); font-weight: var(--fw-semibold); }
+  .investor-scenarios__note { margin: 0; color: var(--color-ink-subtle); font: var(--fw-regular) var(--fs-12) / 1.5 var(--font-ui); }
+  .investor-scenarios__note b { color: var(--color-ink-body); font-weight: var(--fw-semibold); }
+  .investor-scenarios__net { font-family: var(--font-mono); color: var(--color-ink-body); white-space: nowrap; }
+
+  /* Per-visual scenario timeline (states across the life of the investment). */
+  .investor-scenarios__visual-block {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: var(--space-2) 0;
+    border-top: 1px solid var(--color-border-faint);
+  }
+  .investor-scenarios__visual-block:first-child { border-top: none; padding-top: 0; }
+  .investor-scenarios__visual { font: var(--fw-semibold) var(--fs-12) / 1 var(--font-ui); color: var(--color-ink-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .investor-scenarios__timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1px; }
+  .investor-scenarios__span {
+    display: grid;
+    grid-template-columns: minmax(108px, max-content) 1fr max-content max-content;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    text-align: left;
+    appearance: none;
+    border: none;
+    background: transparent;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-control);
+    cursor: pointer;
+  }
+  .investor-scenarios__span:hover { background: var(--color-surface-soft); }
+  .investor-scenarios__span[data-highlight='true'] { background: var(--color-accent-surface); box-shadow: inset 0 0 0 1px var(--color-accent-strong); }
+  .investor-scenarios__span[data-current='true'] .scn-label__word { color: var(--color-ink); font-weight: var(--fw-semibold); }
+  .investor-scenarios__period { font: var(--fw-regular) var(--fs-12) / 1 var(--font-mono); color: var(--color-ink-subtle); white-space: nowrap; }
+  .investor-scenarios__now { font: var(--fw-semibold) var(--fs-11) / 1 var(--font-ui); color: var(--color-accent-strong); text-transform: uppercase; letter-spacing: 0.04em; }
+  .investor-scenarios__span-go { color: var(--color-accent-strong); opacity: 0; transition: opacity var(--motion-fast); }
+  .investor-scenarios__span:hover .investor-scenarios__span-go,
+  .investor-scenarios__span:focus-visible .investor-scenarios__span-go { opacity: 0.7; }
+
+  /* ── Scenario directory ────────────────────────────────────────────────── */
+  .scenarios-section { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+  .scenarios-section__head { display: flex; flex-direction: column; gap: var(--space-3); }
+  .scenarios-section__heading { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
+  .scenarios-section__title { margin: 0; font-family: var(--font-brand); font-size: var(--fs-22); line-height: 1; color: var(--color-ink); }
+  .scenarios-section__sub { color: var(--color-ink-subtle); font: var(--fw-regular) var(--fs-13) / 1 var(--font-ui); }
+  .scenarios-section__lens { display: inline-flex; gap: 2px; padding: 3px; margin-left: auto; background: var(--color-surface-sunken); border-radius: var(--radius-chip); align-self: center; }
+  .scenarios-section__lens-btn {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--color-ink-muted);
+    font: var(--fw-semibold) var(--fs-12) / 1 var(--font-ui);
+    padding: var(--space-1) var(--space-3);
+    border-radius: calc(var(--radius-chip) - 2px);
+    cursor: pointer;
+  }
+  .scenarios-section__lens-btn:hover { color: var(--color-ink-body); }
+  .scenarios-section__lens-btn[data-active='true'] { background: var(--color-surface); color: var(--color-ink); box-shadow: var(--shadow-control); }
+  /* Hug content when it fits (wide center → one row); wrap inside narrow docks
+     so no option is ever clipped. */
+  .scenarios-section__visuals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    padding: 3px;
+    background: var(--color-surface-sunken);
+    border-radius: var(--radius-control);
+    width: max-content;
+    max-width: 100%;
+  }
+  .scenarios-section__visual {
+    flex: none;
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--color-ink-muted);
+    font: var(--fw-medium) var(--fs-12) / 1 var(--font-ui);
+    padding: var(--space-2) var(--space-3);
+    border-radius: 6px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--motion-fast), background var(--motion-fast);
+  }
+  .scenarios-section__visual:hover { color: var(--color-ink-body); }
+  .scenarios-section__visual[data-active='true'] { background: var(--color-surface-raised); color: var(--color-ink); box-shadow: var(--shadow-control); }
+  .scenarios-section__legend { margin: 0; color: var(--color-ink-subtle); font: var(--fw-regular) var(--fs-12) / 1.4 var(--font-ui); }
+  .scenarios-section__legend b { color: var(--color-ink-body); font-weight: var(--fw-semibold); }
+
+  /* min(100%, …) keeps a single card from overflowing a very narrow dock. */
+  .scenarios-section__cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 232px), 1fr)); gap: var(--space-2); }
+  .scenario-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'label count'
+      'bar bar';
+    align-items: center;
+    column-gap: var(--space-3);
+    row-gap: 10px;
+    appearance: none;
+    text-align: left;
+    border: 1px solid var(--color-border-faint);
+    background: var(--color-surface);
+    border-radius: var(--radius-card);
+    padding: var(--space-3) var(--space-3) var(--space-2);
+    cursor: pointer;
+    transition: border-color var(--motion-fast), background var(--motion-fast);
+  }
+  .scenario-card:hover { border-color: var(--color-border-strong); background: var(--color-surface-soft); }
+  .scenario-card[data-active='true'] { border-color: var(--color-accent); background: var(--color-accent-surface); }
+  .scenario-card__label { grid-area: label; align-self: center; }
+  .scenario-card__meta { grid-area: count; display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+  .scenario-card__count { font: var(--fw-semibold) var(--fs-22) / 1 var(--font-ui); color: var(--color-ink); font-variant-numeric: tabular-nums; }
+  .scenario-card__pct { color: var(--color-ink-subtle); font: var(--fw-medium) var(--fs-11) / 1 var(--font-mono); }
+  .scenario-card__bar { grid-area: bar; display: block; height: 3px; border-radius: 999px; background: var(--color-surface-sunken); overflow: hidden; }
+  .scenario-card__bar-fill { display: block; height: 100%; border-radius: 999px; background: var(--color-border-strong); transition: width var(--motion-base); }
+  .scenario-card[data-active='true'] .scenario-card__bar-fill { background: var(--color-accent); }
+
+  .scenarios-section__members { display: flex; flex-direction: column; gap: var(--space-2); }
+  .scenarios-section__members-head { display: flex; align-items: center; gap: var(--space-3); }
+  .scenarios-section__members-title { margin: 0; font-family: var(--font-mono); font-size: var(--fs-14); color: var(--color-ink); }
+  .scenarios-section__members-count { color: var(--color-ink-subtle); font-size: var(--fs-12); margin-right: auto; }
+  .scenarios-section__table-wrap {
+    overflow: auto;
+    border: 1px solid var(--color-border-faint);
+    border-radius: var(--radius-card);
+    max-height: 52vh;
+  }
+  .scenarios-section__empty { color: var(--color-ink-subtle); font: var(--fw-regular) var(--fs-13) / 1.4 var(--font-ui); padding: var(--space-3); }
+
+  /* ── Membership table (directory) ──────────────────────────────────────── */
+  .membership-table { width: 100%; border-collapse: collapse; font: var(--fw-regular) var(--fs-12) / 1.3 var(--font-ui); }
+  .membership-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--color-surface-sunken);
+    color: var(--color-ink-muted);
+    font-weight: var(--fw-semibold);
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+  .membership-table th.num, .membership-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .membership-table tbody td { padding: var(--space-1) var(--space-3); border-bottom: 1px solid var(--color-border-faint); white-space: nowrap; }
+  .membership-table tbody tr { cursor: pointer; }
+  .membership-table tbody tr:hover { background: var(--color-surface-soft); }
+  .membership-table tbody tr[data-selected='true'] { background: var(--color-accent-surface); }
+  .membership-table__code { font-family: var(--font-mono); color: var(--color-ink-body); }
+  .membership-table__netzero-mark { color: var(--color-accent-strong); font-size: 0.8em; margin-left: 1px; cursor: help; }
+  .membership-table__when { font-family: var(--font-mono); color: var(--color-ink-body); }
+  .membership-table__when-now { margin-left: var(--space-2); font: var(--fw-semibold) var(--fs-11) / 1 var(--font-ui); color: var(--color-accent-strong); text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* ── What-if scenario shift readout (change drawer) ────────────────────── */
+  .change-drawer__scenario-shift { padding: var(--space-3) var(--space-4) 0; }
+  .scenario-shift {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--color-surface-soft);
+    border: 1px solid var(--color-border-faint);
+    border-radius: var(--radius-control);
+  }
+  .scenario-shift__title { font: var(--fw-semibold) var(--fs-12) / 1 var(--font-ui); color: var(--color-ink-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .scenario-shift__row { display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: var(--space-2); font: var(--fw-regular) var(--fs-12) / 1.3 var(--font-mono); }
+  .scenario-shift__visual { font-family: var(--font-ui); font-weight: var(--fw-semibold); color: var(--color-ink-body); }
+  .scenario-shift__before { color: var(--color-ink-subtle); text-decoration: line-through; }
+  .scenario-shift__arrow { color: var(--color-ink-muted); }
+  .scenario-shift__after { color: var(--color-accent-strong); font-weight: var(--fw-semibold); }
+  .scenario-shift--none { color: var(--color-ink-subtle); font: var(--fw-regular) var(--fs-12) / 1.4 var(--font-ui); }
+}

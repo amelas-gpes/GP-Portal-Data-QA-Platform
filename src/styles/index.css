@@ -1,0 +1,23 @@
+/* ── GP Portal BI QA — v2 stylesheet ("The Verdict Stage"). ──────────────
+   Single-pass rewrite replacing the 15.6k-line v1 cascade. Layer order is
+   the cascade contract: later layers win. */
+/* Fonts load from index.html (preconnected Google Fonts link). */
+@layer tokens, base, layout, components, states, overlays, a11y, responsive;
+
+@import './tokens.css';
+@import './base.css';
+@import './layout.css';
+@import './components/shell.css';
+@import './components/rail.css';
+@import './components/workbench.css';
+@import './components/stage.css';
+@import './components/drawer.css';
+@import './components/impact-dock.css';
+@import './components/scenario.css';
+@import './components/gallery.css';
+@import './components/overlays-palette.css';
+@import './components/legacy-kept.css';
+@import './states.css';
+@import './overlays.css';
+@import './a11y.css';
+@import './responsive.css';

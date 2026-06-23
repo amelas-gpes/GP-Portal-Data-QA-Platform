@@ -1,0 +1,23 @@
+{
+ "cashFlow": {
+  "Contribution 0 / Distribution 0": 27,
+  "Contribution - / Distribution 0": 94,
+  "Contribution - / Distribution +": 352
+ },
+ "commitment": {
+  "Total Commitments 0 / Available Unfunded Commitments 0": 27,
+  "Total Commitments + / Available Unfunded Commitments +": 443,
+  "Total Commitments + / Available Unfunded Commitments 0": 3
+ },
+ "ratio": {
+  "Contribution 0 / Distribution 0 / Capital Account Balance 0": 27,
+  "Contribution - / Distribution 0 / Capital Account Balance -": 94,
+  "Contribution - / Distribution + / Capital Account Balance -": 352
+ },
+ "totalValue": {
+  "Capital Account Balance 0 / Distribution 0 / Total Value 0": 27,
+  "Capital Account Balance - / Distribution 0 / Total Value -": 94,
+  "Capital Account Balance - / Distribution + / Total Value -": 252,
+  "Capital Account Balance - / Distribution + / Total Value +": 100
+ }
+}

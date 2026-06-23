@@ -1,0 +1,102 @@
+/* ── Scenario Gallery: every way a visual can render (present + synthetic). ── */
+@layer components {
+  .scn-gallery { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+  .scn-gallery--empty { padding-top: var(--space-6); }
+
+  /* ── Header ─────────────────────────────────────────────────────────────── */
+  .scn-gallery__head { display: flex; flex-direction: column; gap: var(--space-3); }
+  .scn-gallery__heading { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
+  .scn-gallery__title { margin: 0; font-family: var(--font-brand); font-size: var(--fs-22); line-height: 1; color: var(--color-ink); }
+  .scn-gallery__sub { color: var(--color-ink-subtle); font: var(--fw-regular) var(--fs-13) / 1.4 var(--font-ui); }
+  .scn-gallery__sub b { color: var(--color-ink-body); font-weight: var(--fw-semibold); }
+
+  /* Visual selector — segmented, hugs content (wraps inside narrow docks). */
+  .scn-gallery__visuals {
+    display: flex; flex-wrap: wrap; gap: 2px; padding: 3px;
+    background: var(--color-surface-sunken); border-radius: var(--radius-control);
+    width: max-content; max-width: 100%;
+  }
+  .scn-gallery__visuals button {
+    flex: none; appearance: none; border: none; background: transparent; color: var(--color-ink-muted);
+    font: var(--fw-medium) var(--fs-12) / 1 var(--font-ui); padding: var(--space-2) var(--space-3);
+    border-radius: 6px; white-space: nowrap; cursor: pointer;
+    transition: color var(--motion-fast), background var(--motion-fast);
+  }
+  .scn-gallery__visuals button:hover { color: var(--color-ink-body); }
+  .scn-gallery__visuals button[data-active='true'] { background: var(--color-surface-raised); color: var(--color-ink); box-shadow: var(--shadow-control); }
+
+  .scn-gallery__toolbar { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+  .scn-gallery__count { margin: 0; display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--color-ink-subtle); font: var(--fw-regular) var(--fs-13) / 1.3 var(--font-ui); }
+  .scn-gallery__count b { color: var(--color-ink); font-weight: var(--fw-semibold); font-variant-numeric: tabular-nums; }
+  .scn-gallery__draft { margin-left: 4px; padding: 2px 8px; border-radius: var(--radius-chip); background: var(--color-amber-soft); color: var(--color-amber-ink); font: var(--fw-semibold) var(--fs-11) / 1 var(--font-ui); }
+
+  .scn-gallery__export {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 6px; appearance: none;
+    border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-ink-body);
+    font: var(--fw-semibold) var(--fs-12) / 1 var(--font-ui); padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-control); cursor: pointer; box-shadow: var(--shadow-control);
+    transition: border-color var(--motion-fast), background var(--motion-fast);
+  }
+  .scn-gallery__export:hover { border-color: var(--color-border-strong); background: var(--color-surface-soft); }
+  .scn-gallery__export:disabled { opacity: 0.6; cursor: progress; }
+
+  /* ── Card grid ──────────────────────────────────────────────────────────── */
+  .scn-gallery__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: var(--space-4); }
+  .scn-gallery__card {
+    display: flex; flex-direction: column; gap: var(--space-2);
+    border: 1px solid var(--color-border-faint); background: var(--color-surface);
+    border-radius: var(--radius-card); padding: var(--space-3); box-shadow: var(--shadow-surface);
+    transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+  }
+  .scn-gallery__card:hover { border-color: var(--color-border-strong); box-shadow: var(--shadow-control); }
+  /* A quiet sage rail marks the one scenario this investor actually sits in. */
+  .scn-gallery__card[data-actual='true'] { border-left: 3px solid var(--color-sage); padding-left: calc(var(--space-3) - 2px); }
+  .scn-gallery__card:not([data-actual]) .scn-gallery__chart { opacity: 0.9; }
+
+  .scn-gallery__card-head { display: flex; align-items: center; gap: var(--space-2); min-height: 22px; }
+  .scn-gallery__card-label { flex: 1 1 auto; min-width: 0; }
+  .scn-gallery__tag {
+    flex: none; padding: 2px 8px; border-radius: var(--radius-chip); border: 1px solid transparent;
+    font: var(--fw-semibold) var(--fs-11) / 1 var(--font-ui); text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap;
+  }
+  .scn-gallery__tag[data-tone='actual'] { background: var(--color-sage-soft); color: var(--color-sage-ink); }
+  .scn-gallery__tag[data-tone='synthetic'] { background: var(--color-surface-sunken); color: var(--color-ink-subtle); border-color: var(--color-border-faint); }
+
+  .scn-gallery__chart { width: 100%; }
+
+  .scn-gallery__card-foot { display: flex; align-items: center; gap: var(--space-2); min-height: var(--icon-btn); }
+  .scn-gallery__meta { flex: 1 1 auto; min-width: 0; color: var(--color-ink-muted); font: var(--fw-regular) var(--fs-12) / 1.3 var(--font-ui); }
+  .scn-gallery__meta b { color: var(--color-ink); font-weight: var(--fw-semibold); font-variant-numeric: tabular-nums; }
+  .scn-gallery__meta--muted { color: var(--color-ink-subtle); font-style: italic; }
+  .scn-gallery__code { font-family: var(--font-mono); color: var(--color-ink-body); font-size: 0.95em; }
+
+  .scn-gallery__actions { flex: none; display: inline-flex; gap: 2px; opacity: 0; transition: opacity var(--motion-fast); }
+  .scn-gallery__card:hover .scn-gallery__actions,
+  .scn-gallery__card:focus-within .scn-gallery__actions { opacity: 1; }
+  .scn-gallery__actions button {
+    display: inline-flex; align-items: center; justify-content: center; width: var(--icon-btn); height: var(--icon-btn);
+    appearance: none; border: 1px solid var(--color-border-faint); background: var(--color-surface); color: var(--color-ink-muted);
+    border-radius: var(--radius-control); cursor: pointer; transition: color var(--motion-fast), border-color var(--motion-fast);
+  }
+  .scn-gallery__actions button:hover { color: var(--color-accent-strong); border-color: var(--color-border-strong); }
+
+  /* ── Lightbox ───────────────────────────────────────────────────────────── */
+  .scn-gallery__lightbox {
+    position: fixed; inset: 0; z-index: var(--z-modal); display: flex; align-items: center; justify-content: center;
+    padding: var(--space-6); background: rgba(26, 24, 20, var(--veil-opacity)); backdrop-filter: blur(2px);
+  }
+  .scn-gallery__lightbox-panel {
+    width: min(960px, 100%); max-height: 90vh; display: flex; flex-direction: column; gap: var(--space-3);
+    background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card);
+    box-shadow: var(--shadow-overlay); padding: var(--space-4);
+  }
+  .scn-gallery__lightbox-head { display: flex; align-items: center; gap: var(--space-3); }
+  .scn-gallery__lightbox-label { flex: 1 1 auto; min-width: 0; }
+  .scn-gallery__lightbox-close {
+    flex: none; display: inline-flex; align-items: center; justify-content: center; width: var(--icon-btn); height: var(--icon-btn);
+    appearance: none; border: none; background: transparent; color: var(--color-ink-muted); border-radius: var(--radius-control); cursor: pointer;
+  }
+  .scn-gallery__lightbox-close:hover { color: var(--color-ink); background: var(--color-surface-soft); }
+  .scn-gallery__lightbox-chart { width: 100%; }
+  .scn-gallery__lightbox-foot { display: flex; align-items: center; gap: var(--space-3); }
+}

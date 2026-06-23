@@ -1,0 +1,292 @@
+/* ── Workbench docks: collapsible navigator / right / bottom panels. ───────
+   Imported after shell.css & rail.css so the in-panel overrides (stage-header
+   sticky offset, rail fills its panel) win on equal specificity. Mobile
+   behaviour lives in the responsive layer at the foot of this file. */
+@layer components {
+  /* ── Panel shell ─────────────────────────────────────────────────────── */
+  /* Panels appear instantly (no entry animation): the grid/overlay places them
+     in their resting, visible state, so a stalled animation can never leave a
+     panel invisible. */
+  .dock-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+  .dock-panel[data-edge='left'] {
+    grid-area: nav;
+    background: var(--color-canvas-cool);
+    border-right: 1px solid var(--color-border);
+  }
+  .dock-panel[data-edge='right'] {
+    grid-area: side;
+    border-left: 1px solid var(--color-border);
+  }
+  .dock-panel[data-edge='bottom'] {
+    grid-area: bottom;
+    border-top: 1px solid var(--color-border);
+  }
+
+  /* ── Header: content tabs (or a title) + close ───────────────────────── */
+  .dock-panel__head {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: 36px;
+    padding: 0 var(--space-1) 0 var(--space-2);
+    border-bottom: 1px solid var(--color-border-faint);
+    background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  }
+  .dock-panel[data-edge='left'] .dock-panel__head { background: transparent; }
+
+  .dock-panel__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    padding-left: 6px;
+    font-size: var(--fs-11);
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-ink-subtle);
+  }
+  .dock-panel__title-icon { display: inline-flex; color: var(--color-ink-muted); }
+
+  .dock-panel__tabs {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .dock-panel__tabs::-webkit-scrollbar { display: none; }
+
+  .dock-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: none;
+    height: 26px;
+    padding: 0 9px;
+    border-radius: var(--radius-control);
+    font-size: var(--fs-12);
+    font-weight: var(--fw-medium);
+    color: var(--color-ink-muted);
+    white-space: nowrap;
+    transition: color var(--motion-fast), background var(--motion-fast);
+  }
+  .dock-tab:hover { color: var(--color-ink); background: var(--color-surface-soft); }
+  .dock-tab__icon { display: inline-flex; opacity: 0.8; }
+  .dock-tab[data-active='true'] {
+    background: var(--color-surface-raised);
+    color: var(--color-ink);
+    font-weight: var(--fw-semibold);
+    box-shadow: var(--shadow-control);
+  }
+  .dock-tab[data-active='true'] .dock-tab__icon { opacity: 1; }
+  .dock-tab__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-amber);
+    flex: none;
+  }
+
+  .dock-panel__close { flex: none; margin-left: auto; }
+
+  /* ── Body: the only scroller inside a panel ──────────────────────────── */
+  .dock-panel__body {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    padding: var(--space-3);
+  }
+  /* The navigator brings its own padding + internal sticky header/footer. */
+  .dock-panel__body[data-view='investors'] { padding: 0; }
+
+  /* The rail, re-homed from a sticky page column into its panel body. */
+  .dock-panel .queue-rail {
+    position: relative;
+    top: 0;
+    width: 100%;
+    height: auto;
+    flex: 1;
+    min-height: 0;
+    overflow: visible;
+    border-right: none;
+    background: transparent;
+  }
+
+  /* ── Resize handle on the panel's inner edge ─────────────────────────── */
+  .dock-resizer {
+    position: absolute;
+    z-index: 6;
+    background: transparent;
+    transition: background var(--motion-fast);
+    touch-action: none;
+  }
+  .dock-resizer::after {
+    content: '';
+    position: absolute;
+    background: var(--color-accent);
+    opacity: 0;
+    transition: opacity var(--motion-fast);
+  }
+  .dock-resizer:hover::after,
+  body.is-dock-resizing .dock-resizer::after { opacity: 0.6; }
+
+  .dock-resizer[data-edge='left'],
+  .dock-resizer[data-edge='right'] { top: 0; bottom: 0; width: 9px; cursor: col-resize; }
+  .dock-resizer[data-edge='left'] { right: -4px; }
+  .dock-resizer[data-edge='right'] { left: -4px; }
+  .dock-resizer[data-edge='left']::after,
+  .dock-resizer[data-edge='right']::after { top: 0; bottom: 0; width: 2px; }
+  .dock-resizer[data-edge='left']::after { right: 4px; }
+  .dock-resizer[data-edge='right']::after { left: 4px; }
+
+  .dock-resizer[data-edge='bottom'] { left: 0; right: 0; height: 9px; top: -4px; cursor: row-resize; }
+  .dock-resizer[data-edge='bottom']::after { left: 0; right: 0; top: 4px; height: 2px; }
+
+  /* ── Top-bar toggles: open/close any side ────────────────────────────── */
+  .workbench-toggles {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    flex: none;
+    padding: 2px;
+    border-radius: var(--radius-control);
+    background: var(--color-surface-sunken);
+  }
+  .workbench-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    color: var(--color-ink-muted);
+    transition: color var(--motion-fast), background var(--motion-fast);
+  }
+  .workbench-toggle:hover { color: var(--color-ink); }
+  .workbench-toggle[data-active='true'] {
+    background: var(--color-surface-raised);
+    color: var(--color-accent-strong);
+    box-shadow: var(--shadow-control);
+  }
+
+  /* ── What-if, as docked content ──────────────────────────────────────── */
+  .whatif-panel { display: flex; flex-direction: column; gap: var(--space-3); }
+  .whatif-panel__shift { margin-bottom: var(--space-1); }
+
+  /* ── Logic editor, as docked content ─────────────────────────────────── */
+  .logic-panel { display: flex; flex-direction: column; gap: var(--space-3); }
+  .logic-panel--empty { font-size: var(--fs-12); color: var(--color-ink-subtle); }
+
+  .logic-panel__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); }
+  .logic-panel__head-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .logic-panel__head-copy strong { font-size: var(--fs-13); font-weight: var(--fw-semibold); color: var(--color-ink); }
+  .logic-panel__head-copy span { font-size: var(--fs-11); color: var(--color-ink-muted); }
+  .logic-panel__head-status { display: inline-flex; align-items: center; gap: var(--space-1); flex: none; }
+
+  .logic-panel__selectors { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-2); }
+  .logic-panel__field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .logic-panel__field > span { font-size: 10px; font-weight: var(--fw-semibold); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ink-subtle); }
+  .logic-panel__field select {
+    width: 100%;
+    height: 30px;
+    padding: 0 8px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+    background: var(--color-surface);
+    font-size: var(--fs-12);
+    color: var(--color-ink);
+  }
+
+  .logic-panel__block { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .logic-panel__block-label { font-size: 10px; font-weight: var(--fw-semibold); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ink-subtle); }
+  .logic-panel__production {
+    display: block;
+    padding: 8px 10px;
+    border: 1px solid var(--color-border-faint);
+    border-radius: var(--radius-control);
+    background: var(--color-surface-sunken);
+    font-family: var(--font-mono);
+    font-size: var(--fs-11);
+    line-height: 1.5;
+    color: var(--color-ink-body);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .logic-panel__editor-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+  .logic-panel__editor {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+    background: var(--color-surface);
+    font-family: var(--font-mono);
+    font-size: var(--fs-12);
+    line-height: 1.5;
+    color: var(--color-ink);
+    resize: vertical;
+  }
+  .logic-panel__editor:focus-visible { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 2px var(--color-accent-soft); }
+
+  .logic-panel__actions { display: flex; align-items: center; gap: var(--space-2); margin-top: 2px; }
+
+  /* The stage header sticks to the top of the stage scroller (not the old
+     page-scroll offset under the top bar). Outranks shell.css by specificity. */
+  .app-shell .stage-header { top: 0; }
+
+  /* Mobile-only scrim behind an overlaid panel; inert (hidden) on desktop. */
+  .workbench__scrim { display: none; }
+}
+
+/* ── Narrow viewports: docks float over the stage instead of squeezing it. ─ */
+@layer responsive {
+  @media (max-width: 768px) {
+    /* The grid collapses; the stage owns the whole row and the panels overlay. */
+    .workbench {
+      display: block;
+      position: relative;
+      transition: none;
+    }
+    .stage-column { height: 100%; }
+
+    .dock-panel {
+      position: fixed;
+      z-index: var(--z-overlay);
+      box-shadow: var(--shadow-overlay);
+    }
+    /* Drawers rest on-screen by layout (a slide-in that begins fully off-screen
+       would leave the panel invisible if its animation ever stalls). */
+    .dock-panel[data-edge='left'] { top: 0; bottom: 0; left: 0; width: min(320px, 86vw); }
+    .dock-panel[data-edge='right'] { top: 0; bottom: 0; right: 0; width: min(420px, 92vw); }
+    .dock-panel[data-edge='bottom'] { left: 0; right: 0; bottom: 0; height: min(60dvh, 480px); }
+    .dock-resizer { display: none; }
+
+    .workbench__scrim[data-active='true'] {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: calc(var(--z-overlay) - 1);
+      background: rgba(26, 24, 20, 0.4);
+      border: none;
+      padding: 0;
+    }
+  }
+}

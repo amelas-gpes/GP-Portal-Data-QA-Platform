@@ -1,0 +1,330 @@
+/* ── Overlays: CommandPalette (Ctrl+K) & HelpOverlay (?). ─────────────────
+   Backdrop/z-index/modal chrome come from .ui-modal-backdrop / .ui-modal-*
+   in base.css; this file styles only what these two components add. */
+@layer components {
+  /* ════ CommandPalette ════════════════════════════════════════════════ */
+
+  /* .ui-modal-backdrop centers; the palette instead docks near the top. */
+  .command-palette {
+    align-items: flex-start;
+    padding-top: 14vh;
+  }
+
+  .command-palette__panel {
+    width: 640px;
+    max-width: 94vw;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-overlay);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 68vh;
+  }
+
+  .command-palette__search {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0 var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-ink-subtle);
+    flex: none;
+  }
+
+  /* Argument-mode breadcrumb: the command awaiting its value. */
+  .command-palette__crumb {
+    flex: none;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--color-accent-surface);
+    color: var(--color-accent-strong);
+    font-size: var(--fs-12);
+    font-weight: var(--fw-medium);
+    white-space: nowrap;
+  }
+
+  /* Large query input: borderless, the search row supplies the hairline. */
+  .command-palette__input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    padding: 12px 0;
+    font-size: var(--fs-14);
+    color: var(--color-ink);
+  }
+  .command-palette__input:focus-visible {
+    border: none;
+    box-shadow: none;
+    outline: none;
+  }
+  .command-palette__input::placeholder { color: var(--color-ink-subtle); }
+
+  /* Scope chips: sigil + label, Tab cycles, click selects. */
+  .command-palette__scopes {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 6px var(--space-3);
+    border-bottom: 1px solid var(--color-border-faint);
+    overflow-x: auto;
+    flex: none;
+  }
+
+  .command-palette__scope {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 22px;
+    padding: 0 var(--space-2);
+    border: 1px solid transparent;
+    border-radius: var(--radius-chip);
+    background: transparent;
+    font-size: var(--fs-11);
+    color: var(--color-ink-muted);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .command-palette__scope:hover { background: var(--color-surface-soft); color: var(--color-ink); }
+  .command-palette__scope[data-active='true'] {
+    background: var(--color-accent-surface);
+    border-color: rgba(201, 100, 66, 0.35);
+    color: var(--color-accent-strong);
+  }
+  .command-palette__scope kbd { font-size: 10px; padding: 0 3px; }
+
+  .command-palette__results {
+    list-style: none;
+    margin: 0;
+    padding: var(--space-1) 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .command-palette__group-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3) 3px;
+    font-size: 10px;
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-subtle);
+  }
+  .command-palette__group-label > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  .command-palette__group-count {
+    flex: none;
+    font-weight: var(--fw-regular);
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: var(--fs-11);
+  }
+
+  .command-palette__option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 32px;
+    padding: 4px var(--space-3);
+    font-size: var(--fs-13);
+    color: var(--color-ink-body);
+    cursor: pointer;
+  }
+  .command-palette__option:hover,
+  .command-palette__option[data-active='true'],
+  .command-palette__option[aria-selected='true'] {
+    background: var(--color-accent-surface);
+    color: var(--color-ink);
+  }
+
+  .command-palette__icon { flex: none; color: var(--color-ink-subtle); }
+
+  /* Severity dot gutter — sized to align with kind icons. */
+  .command-palette__dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    margin: 0 3.5px;
+    border-radius: var(--radius-chip);
+    background: var(--color-border-strong);
+  }
+  .command-palette__dot[data-tier='critical'] { background: var(--sev-critical); }
+  .command-palette__dot[data-tier='warning'] { background: var(--sev-warning); }
+  .command-palette__dot[data-tier='info'] { background: var(--sev-info); }
+
+  .command-palette__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .command-palette__title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  .command-palette__subtitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    font-size: var(--fs-11);
+    color: var(--color-ink-subtle);
+  }
+
+  /* Matched characters — calm emphasis, no highlighter background. */
+  .command-palette__hl {
+    background: none;
+    color: var(--color-accent-strong);
+    font-weight: var(--fw-semibold);
+  }
+
+  .command-palette__trailing {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .command-palette__badge {
+    padding: 1px 6px;
+    border-radius: var(--radius-chip);
+    font-size: 10px;
+    font-weight: var(--fw-medium);
+    background: var(--color-surface-sunken);
+    color: var(--color-ink-muted);
+    white-space: nowrap;
+  }
+  .command-palette__badge[data-tone='accent'] { background: var(--color-accent-surface); color: var(--color-accent-strong); }
+  .command-palette__badge[data-tone='good'] { background: var(--color-sage-soft); color: var(--color-sage-ink); }
+  .command-palette__badge[data-tone='warn'] { background: var(--color-amber-soft); color: var(--color-amber-ink); }
+  .command-palette__badge[data-tone='bad'] { background: var(--color-danger-soft); color: var(--color-danger-ink); }
+
+  /* Verdict mark gutter — fixed width so investor rows align with or
+     without a recorded verdict. */
+  .command-palette__mark {
+    flex: none;
+    width: 14px;
+    text-align: center;
+    font-size: var(--fs-12);
+    line-height: 1;
+  }
+  .command-palette__mark[data-status='approved'] { color: var(--verdict-approved); }
+  .command-palette__mark[data-status='watch'] { color: var(--verdict-watch); }
+  .command-palette__mark[data-status='flagged'] { color: var(--verdict-flagged); }
+
+  .command-palette__forward { flex: none; color: var(--color-ink-subtle); }
+
+  .command-palette__empty { min-height: 96px; padding: var(--space-4); }
+
+  .command-palette__footer {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: 7px var(--space-3);
+    border-top: 1px solid var(--color-border-faint);
+    font-size: var(--fs-11);
+    color: var(--color-ink-subtle);
+  }
+  .command-palette__footer-count { flex: none; }
+
+  /* Inline action confirmation (e.g. "Ticket summary copied"). */
+  .command-palette__flash {
+    flex: none;
+    font-weight: var(--fw-medium);
+  }
+  .command-palette__flash[data-tone='good'] { color: var(--color-sage-ink); }
+  .command-palette__flash[data-tone='bad'] { color: var(--color-danger-ink); }
+
+  /* ════ HelpOverlay (content inside ui-modal-shell) ═══════════════════ */
+
+  .help-overlay__section + .help-overlay__section { margin-top: var(--space-6); }
+
+  .help-overlay__section-title {
+    font-size: var(--fs-11);
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-subtle);
+    margin-bottom: var(--space-2);
+  }
+
+  /* Keymap table: dense 2-col rows, kbd chips styled in base.css. */
+  .help-overlay__keys {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-12);
+  }
+  .help-overlay__keys th {
+    text-align: left;
+    font-size: 10px;
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-subtle);
+    padding: 0 var(--space-2) 4px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .help-overlay__keys td {
+    height: 26px;
+    padding: 2px var(--space-2) 2px 0;
+    border-bottom: 1px solid var(--color-border-faint);
+    color: var(--color-ink-body);
+    vertical-align: middle;
+  }
+  .help-overlay__keys tbody tr:last-child td { border-bottom: none; }
+  .help-overlay__key-cell { width: 170px; white-space: nowrap; }
+
+  .help-overlay__paragraph {
+    font-size: var(--fs-12);
+    line-height: var(--lh-base);
+    color: var(--color-ink-body);
+  }
+  .help-overlay__paragraph + .help-overlay__paragraph { margin-top: var(--space-2); }
+  .help-overlay__paragraph strong { color: var(--color-ink); font-weight: var(--fw-semibold); }
+
+  /* Formula DSL reference: mono signatures, hairline-separated rows. */
+  .help-overlay__dsl {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .help-overlay__dsl-row {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: baseline;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--color-border-faint);
+  }
+  .help-overlay__dsl-row:last-child { border-bottom: none; }
+  .help-overlay__dsl-signature {
+    font-family: var(--font-mono);
+    font-size: var(--fs-12);
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+  .help-overlay__dsl-detail {
+    font-size: var(--fs-12);
+    color: var(--color-ink-muted);
+  }
+}

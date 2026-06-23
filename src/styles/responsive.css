@@ -1,0 +1,191 @@
+/* ── Responsive: tablet & mobile adaptations. ─────────────────────────────
+   Final layer in the cascade contract (index.css) — every rule here beats
+   component defaults regardless of specificity. Desktop-first overrides:
+   nothing in this file changes the ≥1025px wide-screen experience except
+   touch-target sizing on coarse-pointer devices.
+   Breakpoints: 1024 (drawer overlays stage), 900 (1-col charts), 768 (mobile
+   restructure: wrapped top bar, off-canvas rail, full-screen surfaces). */
+@layer responsive {
+  /* ── Mobile-only chrome, inert on desktop ── */
+  .top-bar__rail-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: var(--icon-btn);
+    height: var(--icon-btn);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+    background: var(--color-surface-raised);
+    color: var(--color-ink-muted);
+  }
+  .top-bar__rail-toggle:hover { border-color: var(--color-border-strong); color: var(--color-ink); }
+  .workbench__rail-backdrop { display: none; }
+
+  /* ════ Touch ergonomics (coarse-pointer devices at any width) ═════════ */
+  @media (pointer: coarse) {
+    :root {
+      --row-rail: 42px;
+      --row-table: 36px;
+      --chip-h: 30px;
+      --icon-btn: 36px;
+    }
+    /* Keyboard affordances mean nothing without a keyboard. */
+    .top-bar__palette-hint,
+    .queue-rail__footer,
+    .stage-header__verdict-button kbd { display: none; }
+  }
+
+  /* Hover-revealed controls must be visible where hover doesn't exist. */
+  @media (hover: none) {
+    .chart-card__copy { opacity: 1; }
+    .queue-rail__row-check { opacity: 1; }
+  }
+
+  /* ════ ≤1024 — a touch narrower navigator ════════════════════════════ */
+  @media (max-width: 1024px) {
+    :root { --w-rail: 216px; }
+  }
+
+  /* ════ ≤900 — single-column chart grid ════════════════════════════════ */
+  @media (max-width: 900px) {
+    .chart-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  /* ════ ≤768 — mobile restructure ══════════════════════════════════════ */
+  @media (max-width: 768px) {
+    /* iOS zooms any focused input under 16px. The editor highlight layer
+       must keep identical metrics to its textarea, so both move together. */
+    input, select, textarea { font-size: 16px; }
+    .formula-highlight-layer, .formula-source-input { font-size: 16px; }
+
+    /* ── TopBar: control row + scrollable filter strip, both sticky ── */
+    .top-bar {
+      flex-wrap: wrap;
+      height: auto;
+      min-height: var(--h-topbar);
+      padding: var(--space-1) var(--space-2);
+      row-gap: var(--space-1);
+      /* Solid surface: backdrop-filter would become the containing block for
+         the fixed-position popovers below, and it's costly on mobile GPUs. */
+      background: var(--color-surface);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    .top-bar__rail-toggle { display: inline-flex; }
+    .top-bar__brand-name { display: none; }
+    .top-bar__session { display: none; }
+    .top-bar__mode-chip:not([data-armed='true']) { display: none; } /* PROD is the default — only signal departures */
+    .top-bar__progress-track,
+    .top-bar__progress-pace,
+    .top-bar__palette-hint { display: none; }
+    .top-bar__action { padding: 4px 8px; }
+    .top-bar__filters {
+      order: 10;
+      flex-basis: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .top-bar__filters::-webkit-scrollbar { display: none; }
+    .top-bar__filters > * { flex: none; }
+
+    /* Anchored popovers can't drop from a 30px scroll strip — they become
+       bottom sheets. fixed is viewport-relative (solid top bar, no filter). */
+    /* The bar's own stacking context (z 35, states.css) would trap the sheet
+       under the dock/drawer/session cards — outrank them while a sheet is up. */
+    .top-bar:has(.top-bar__filter-popover, .top-bar__session-popover, .top-bar__mode-menu) {
+      z-index: var(--z-modal);
+    }
+    .top-bar__filter-popover,
+    .top-bar__session-popover,
+    .top-bar__mode-menu {
+      position: fixed;
+      top: auto;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: auto; /* beat the anchored popover's fixed width — sheets span the viewport */
+      border-radius: 14px 14px 0 0;
+      border-bottom: none;
+      max-height: 70dvh;
+      overflow-y: auto;
+      padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+      z-index: var(--z-modal);
+    }
+
+    /* ── StageHeader: identity row, controls wrap beneath ── */
+    .stage-header {
+      /* The wrapped top bar has no fixed height, so the sticky offset math
+         no longer holds. relative (not static) keeps the shimmer anchored. */
+      position: relative;
+      top: auto;
+      flex-wrap: wrap;
+      height: auto;
+      min-height: var(--h-stageheader);
+      padding: var(--space-2) var(--space-3);
+      row-gap: var(--space-2);
+    }
+    .stage-header__identity { flex-basis: 100%; flex-wrap: wrap; row-gap: 2px; }
+    .stage-header__meta { max-width: 100%; }
+    .stage-header__verdict { flex-wrap: wrap; }
+    .stage-header__note-input { width: auto; flex-basis: 100%; }
+    .stage-header__steppers { margin-left: auto; }
+
+    /* ── ReconcileStrip: wraps, scrolls with the page ── */
+    .reconcile-strip {
+      position: static;
+      flex-wrap: wrap;
+      height: auto;
+      min-height: var(--h-reconcile);
+      padding: var(--space-1) var(--space-3);
+      row-gap: var(--space-1);
+    }
+    .reconcile-strip__lens { margin-left: 0; }
+
+    /* The navigator and other panels become floating overlays at this width —
+       owned by the dock system (components/workbench.css), not the rail. */
+
+    /* ── Stage column & summoned surfaces ── */
+    .stage-column { padding: var(--space-2); padding-top: 0; }
+    .impact-panel { top: 0; width: 100%; }
+    .evidence-dock {
+      height: min(var(--h-dock), 55dvh);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .evidence-dock[data-tall='true'] { height: 70dvh; }
+
+    /* ── Session cards: top-right stack becomes bottom toasts ── */
+    .session-layer {
+      top: auto;
+      bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+      left: var(--space-3);
+      right: var(--space-3);
+      align-items: stretch;
+    }
+    .session-card { width: auto; max-width: none; }
+
+    /* ── Modals & overlays ── */
+    .ui-modal-backdrop, .modal-backdrop { padding: var(--space-3); }
+    .ui-modal-shell, .import-modal { max-height: 90dvh; }
+    .command-palette {
+      padding: var(--space-2);
+      padding-top: max(var(--space-3), env(safe-area-inset-top));
+    }
+    .command-palette__panel { max-height: 80dvh; }
+    .help-overlay__keys .help-overlay__key-cell { width: auto; }
+    .help-overlay__dsl-row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+    .help-overlay__dsl-signature { white-space: normal; overflow-wrap: anywhere; }
+
+    /* ── Dense widgets ── */
+    .chart-tooltip { min-width: 0; max-width: min(320px, calc(100vw - 24px)); }
+    .tooltip-details { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .formula-panel__selectors { grid-template-columns: minmax(0, 1fr); }
+    .app-empty { padding: var(--space-3); }
+    .import-drop-zone { padding: var(--space-4); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .workbench { transition: none; }
+  }
+}

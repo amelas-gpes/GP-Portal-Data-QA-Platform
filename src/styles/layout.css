@@ -1,0 +1,90 @@
+/* ── Shell geometry: sticky stack, rail, stage, dock & drawer make-way. ──── */
+@layer layout {
+  /* Fixed-viewport workbench: a top bar over a grid of dockable panels. The
+     shell never scrolls — each region (navigator, stage, docks) scrolls itself,
+     the way an IDE workbench does. */
+  .app-shell {
+    height: 100dvh;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  /* 2px terracotta tint across the very top whenever pixels are not pure production */
+  .app-shell[data-diff-armed='true']::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--mode-tint);
+    z-index: calc(var(--z-sticky) + 1);
+  }
+
+  /* The workbench grid: navigator | stage | right panel, with a bottom panel
+     under the stage. Closed edges collapse to 0 via the --*-col/-row vars, which
+     the panel-open data-attributes light up. --nav-size/-side-size/-bottom-size
+     come in as inline styles (the persisted, resizable sizes). */
+  /* Track sizes flow in through custom properties; the open data-attributes
+     light up the size, closed edges stay 0. We deliberately do NOT transition
+     grid-template here — animating a grid template whose tracks come from var()
+     freezes the computed value in Chromium. The panels fade themselves in
+     instead (see .dock-panel in workbench.css), and resize tracks live. */
+  .workbench {
+    display: grid;
+    grid-template-columns: var(--nav-col, 0px) minmax(0, 1fr) var(--side-col, 0px);
+    grid-template-rows: minmax(0, 1fr) var(--bottom-row, 0px);
+    grid-template-areas:
+      'nav center side'
+      'nav bottom side';
+    min-width: 0;
+    min-height: 0;
+  }
+  .workbench[data-nav-open='true'] { --nav-col: var(--nav-size, var(--w-rail)); }
+  .workbench[data-side-open='true'] { --side-col: var(--side-size, 408px); }
+  .workbench[data-bottom-open='true'] { --bottom-row: var(--bottom-size, 300px); }
+
+  /* No text selection while dragging a splitter. */
+  body.is-dock-resizing { user-select: none; }
+
+  .stage-column {
+    grid-area: center;
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: var(--space-2) var(--space-6) var(--space-6);
+    padding-top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  /* Chart grid */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+    align-items: stretch;
+  }
+  @media (min-width: 1700px) {
+    .chart-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  .chart-grid-expanded { grid-template-columns: minmax(0, 1fr); }
+  .chart-card-wide { grid-column: 1 / -1; }
+  /* .chart-card-concealed lives in states.css — it must outrank the
+     components layer's `.chart-card { display: flex }` to hide at all. */
+
+  /* Empty state */
+  .app-empty {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6);
+  }
+  .app-empty__inner { width: 640px; max-width: 94vw; display: flex; flex-direction: column; gap: var(--space-4); text-align: center; align-items: center; }
+  .app-empty__headline { font-family: var(--font-brand); font-weight: var(--fw-regular); font-size: var(--fs-28); color: var(--color-ink); }
+  .app-empty__sub { color: var(--color-ink-muted); font-size: var(--fs-14); }
+  .app-empty__drop { width: 100%; }
+  .app-empty__progress { color: var(--color-ink-subtle); font-size: var(--fs-12); font-family: var(--font-mono); }
+}
