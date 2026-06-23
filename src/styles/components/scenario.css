@@ -6,7 +6,7 @@
     gap: 2px;
     padding: 3px;
     background: var(--color-surface-sunken);
-    border-radius: var(--radius-chip);
+    border-radius: var(--radius-control);
     width: max-content;
   }
   .section-switch button {
@@ -16,9 +16,9 @@
     color: var(--color-ink-muted);
     font: var(--fw-semibold) var(--fs-13) / 1 var(--font-ui);
     padding: var(--space-2) var(--space-4);
-    border-radius: calc(var(--radius-chip) - 2px);
+    border-radius: 6px;
     cursor: pointer;
-    transition: color var(--motion-fast);
+    transition: color var(--motion-fast), background var(--motion-fast);
   }
   .section-switch button:hover { color: var(--color-ink-body); }
   .section-switch button[data-active='true'] {
@@ -159,7 +159,7 @@
   .scenarios-section__heading { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
   .scenarios-section__title { margin: 0; font-family: var(--font-brand); font-size: var(--fs-22); line-height: 1; color: var(--color-ink); }
   .scenarios-section__sub { color: var(--color-ink-subtle); font: var(--fw-regular) var(--fs-13) / 1 var(--font-ui); }
-  .scenarios-section__lens { display: inline-flex; gap: 2px; padding: 3px; margin-left: auto; background: var(--color-surface-sunken); border-radius: var(--radius-chip); align-self: center; }
+  .scenarios-section__lens { display: inline-flex; gap: 2px; padding: 3px; margin-left: auto; background: var(--color-surface-sunken); border-radius: var(--radius-control); align-self: center; }
   .scenarios-section__lens-btn {
     appearance: none;
     border: none;
@@ -167,8 +167,9 @@
     color: var(--color-ink-muted);
     font: var(--fw-semibold) var(--fs-12) / 1 var(--font-ui);
     padding: var(--space-1) var(--space-3);
-    border-radius: calc(var(--radius-chip) - 2px);
+    border-radius: 6px;
     cursor: pointer;
+    transition: color var(--motion-fast), background var(--motion-fast);
   }
   .scenarios-section__lens-btn:hover { color: var(--color-ink-body); }
   .scenarios-section__lens-btn[data-active='true'] { background: var(--color-surface); color: var(--color-ink); box-shadow: var(--shadow-control); }

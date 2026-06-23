@@ -1,4 +1,4 @@
-import { Database, FlaskConical, LayoutGrid, PanelBottom, PanelLeft, PanelRight, Sigma, Users, X } from 'lucide-react';
+import { Database, FlaskConical, LayoutGrid, PanelBottom, PanelLeft, PanelRight, Sigma, Users } from 'lucide-react';
 import { useCallback, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import {
   DOCK_BOUNDS,
@@ -84,8 +84,14 @@ export function DockPanel({ edge, state, views, title, dotView, onSelectView, on
             {heading}
           </span>
         )}
-        <IconButton className="dock-panel__close" label={`Close ${heading} panel`} variant="text" onClick={onClose}>
-          <X size={15} />
+        <IconButton
+          className="dock-panel__close"
+          label={`Hide ${heading} panel`}
+          title={`Hide the ${heading} panel`}
+          variant="text"
+          onClick={onClose}
+        >
+          {EDGE_ICON[edge]}
         </IconButton>
       </header>
       <div className="dock-panel__body" data-view={state.view}>
@@ -139,27 +145,29 @@ function DockResizer({ edge, size, onResize }: { edge: DockEdge; size: number; o
   );
 }
 
-/** The three panel toggles that live in the top bar — open or close any side. */
+/**
+ * Reopeners for hidden panels. Each open panel is hidden from its own header
+ * (the close control there), so the top bar only carries a "show" control for
+ * the panels that are currently closed — and nothing at all when every panel is
+ * open.
+ */
 export function WorkbenchToggles({ layout, onToggle }: { layout: DockLayout; onToggle: (edge: DockEdge) => void }) {
+  const closed = TOGGLE_ORDER.filter(({ edge }) => !layout[edge].open);
+  if (!closed.length) return null;
   return (
-    <div className="workbench-toggles" role="group" aria-label="Panels">
-      {TOGGLE_ORDER.map(({ edge, label, hint }) => {
-        const open = layout[edge].open;
-        return (
-          <button
-            key={edge}
-            type="button"
-            className="workbench-toggle"
-            data-active={open ? 'true' : undefined}
-            aria-pressed={open}
-            aria-label={`${open ? 'Hide' : 'Show'} ${label}`}
-            title={`${open ? 'Hide' : 'Show'} ${label} (${hint})`}
-            onClick={() => onToggle(edge)}
-          >
-            {EDGE_ICON[edge]}
-          </button>
-        );
-      })}
+    <div className="workbench-toggles" role="group" aria-label="Show panels">
+      {closed.map(({ edge, label, hint }) => (
+        <button
+          key={edge}
+          type="button"
+          className="workbench-toggle"
+          aria-label={`Show ${label}`}
+          title={`Show ${label} (${hint})`}
+          onClick={() => onToggle(edge)}
+        >
+          {EDGE_ICON[edge]}
+        </button>
+      ))}
     </div>
   );
 }

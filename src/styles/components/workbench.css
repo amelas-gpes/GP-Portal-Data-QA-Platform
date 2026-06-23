@@ -160,7 +160,9 @@
   .dock-resizer[data-edge='bottom'] { left: 0; right: 0; height: 9px; top: -4px; cursor: row-resize; }
   .dock-resizer[data-edge='bottom']::after { left: 0; right: 0; top: 4px; height: 2px; }
 
-  /* ── Top-bar toggles: open/close any side ────────────────────────────── */
+  /* ── Top-bar reopeners: bring back a hidden panel ────────────────────────
+     Only rendered for closed panels (an open panel is hidden from its own
+     header), so these are "show" affordances, never a persistent toggle row. */
   .workbench-toggles {
     display: inline-flex;
     align-items: center;
@@ -180,12 +182,7 @@
     color: var(--color-ink-muted);
     transition: color var(--motion-fast), background var(--motion-fast);
   }
-  .workbench-toggle:hover { color: var(--color-ink); }
-  .workbench-toggle[data-active='true'] {
-    background: var(--color-surface-raised);
-    color: var(--color-accent-strong);
-    box-shadow: var(--shadow-control);
-  }
+  .workbench-toggle:hover { color: var(--color-ink); background: var(--color-surface-raised); box-shadow: var(--shadow-control); }
 
   /* ── What-if, as docked content ──────────────────────────────────────── */
   .whatif-panel { display: flex; flex-direction: column; gap: var(--space-3); }
