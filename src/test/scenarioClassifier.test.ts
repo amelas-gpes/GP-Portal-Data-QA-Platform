@@ -11,8 +11,8 @@ import {
   scenarioEverBucketsForInvestors,
   scenarioInvestorsByBucketId,
 } from '../utils/scenarioClassifier';
-import fixtureData from './fixtures/rreScenarioDetail.json';
-import sheet1Data from './fixtures/rreSheet1Counts.json';
+import fixtureData from './fixtures/scenarioDetail.json';
+import sheet1Data from './fixtures/sheet1Counts.json';
 
 type FixtureRow = {
   fund: string | null;
@@ -52,7 +52,7 @@ function fixtureRows(): BIRow[] {
   } as unknown as BIRow));
 }
 
-describe('classifyInvestorScenarios — reproduces RRE Scenarios.xlsx', () => {
+describe('classifyInvestorScenarios — reproduces the reference scenario workbook', () => {
   const model = classifyInvestorScenarios(fixtureRows());
 
   it('classifies all 473 workbook investors', () => {

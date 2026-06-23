@@ -390,7 +390,7 @@ export type ScenarioSummary = ScenarioDefinition & {
 
 // ── Sign-pattern scenario model (workbook-driven) ──────────────────────────
 // A "scenario" is the sign tuple of an investor's aggregated metrics, one
-// classification per visual (per RRE Scenarios.xlsx). Replaces the QA edge-case
+// classification per visual (per the reference scenario workbook). Replaces the QA edge-case
 // catalog + severity tiers. Signs use raw ledger values: a paid-in contribution
 // is negative, returned cash (distribution) is positive.
 

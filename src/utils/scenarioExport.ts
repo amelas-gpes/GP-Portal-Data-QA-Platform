@@ -57,7 +57,7 @@ export function exportScenarioMembersCsv(args: {
  * Request 2 — export every visual and its scenarios as a workbook: one sheet
  * per visual (each scenario with its investor count and short codes), plus a
  * Scenario Detail sheet (one row per investor with its label + metrics for
- * every visual). Mirrors the source RRE Scenarios.xlsx.
+ * every visual). Mirrors the source scenario workbook.
  */
 export async function exportScenarioWorkbook(model: ScenarioModel, fileBase: string): Promise<void> {
   const XLSX = await import('@e965/xlsx');

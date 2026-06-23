@@ -14,7 +14,7 @@ import type {
 } from '../types';
 import { MONEY_EPSILON } from './aggregation';
 
-// Sign-pattern scenario classifier (per RRE Scenarios.xlsx). A scenario is the
+// Sign-pattern scenario classifier (per the reference scenario workbook). A scenario is the
 // sign tuple of an investor's aggregated metrics, one label per visual. Signs
 // are taken from RAW ledger values so labels reproduce the workbook exactly:
 // a paid-in contribution is negative; returned cash (distribution) is positive.
@@ -316,7 +316,7 @@ export function classifyInvestorScenarios(rows: BIRow[]): ScenarioModel {
       investorKey,
       shortCode: first.investorShortCode,
       portalName: first.investorPortalDisplayName ?? first.investorGroupName,
-      // In RRE exports the partnership is carried in Company Name; investorKey
+      // In these BI exports the partnership is carried in Company Name; investorKey
       // already collapses to one group per investor-fund.
       fund: first.companyName ?? first.investorGroupName,
       rowCount,

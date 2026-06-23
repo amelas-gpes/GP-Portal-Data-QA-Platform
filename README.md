@@ -27,7 +27,7 @@ Capital At Work  = −Called Capital − Distributions
 Non-Recallable   = Distributions − Recallable Distributions
 ```
 
-**Aggregated per investor-fund, never per line item.** A BI export is GL-transactional (hundreds of rows per investor). The app sums every line item for an investor-fund first, then takes the sign — so a scenario is always an investor-fund-level classification. The model and its labels reproduce `RRE Scenarios.xlsx` exactly (validated against all 473 investors in the reference dataset).
+**Aggregated per investor-fund, never per line item.** A BI export is GL-transactional (hundreds of rows per investor). The app sums every line item for an investor-fund first, then takes the sign — so a scenario is always an investor-fund-level classification. The model and its labels reproduce the reference scenario workbook exactly (validated against all 473 investors in the reference dataset).
 
 **Signs are raw ledger values**, so they match the source workbook: `Contribution −` means capital was paid in; `Distribution +` means cash was returned. There is no "good/bad" or severity — a scenario is simply a classification.
 

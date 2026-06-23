@@ -20,7 +20,6 @@ outputs/
 artifacts/
 qa-screenshots/
 *.tsbuildinfo
-update-log_*.txt
 
 # Editor directories and files
 .vscode/*
